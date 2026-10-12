@@ -5,6 +5,7 @@ A minimal, animated launcher for your Steam library: covers on a WebGL strip
 or as 3D game cases, search as you type, playtime, Steam reviews, Metacritic,
 time to beat and news, and a showroom mode that presents your games on its own.
 Not affiliated with Valve.
+
 ![PREVIEW2](https://i.imgur.com/xwR6r2W.png)
 
 The same launcher ships two ways, built from one set of sources:
@@ -20,7 +21,9 @@ The same launcher ships two ways, built from one set of sources:
 
 Download both from the [Releases](../../releases) page. Run only one of the
 two: both use **Ctrl+Alt+G** by default, and the second one can't register it.
+
 ![PREVIEW3](https://i.imgur.com/hyMRPCs.jpeg)
+
 ## Features
 
 - Installed and not installed games, from Steam's own files: no account or API
