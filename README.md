@@ -5,6 +5,7 @@ A minimal, animated launcher for your Steam library: covers on a WebGL strip
 or as 3D game cases, search as you type, playtime, Steam reviews, Metacritic,
 time to beat and news, and a showroom mode that presents your games on its own.
 Not affiliated with Valve.
+![PREVIEW2](https://i.imgur.com/xwR6r2W.png)
 
 The same launcher ships two ways, built from one set of sources:
 
@@ -15,6 +16,7 @@ The same launcher ships two ways, built from one set of sources:
 | Settings | inside the launcher (sliders button → Program) | Windhawk's mod settings |
 | Starts | with Windows, if you turn it on | with Windhawk |
 | Needs | the WebView2 Runtime (preinstalled on Windows 10 and 11) | Windhawk |
+![PREVIEW3](https://i.imgur.com/hyMRPCs.jpeg)
 
 Download both from the [Releases](../../releases) page. Run only one of the
 two: both use **Ctrl+Alt+G** by default, and the second one can't register it.
