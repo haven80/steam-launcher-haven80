@@ -71,6 +71,8 @@ If something goes wrong the program shows a message instead of closing, and
 
 ### Time to beat
 
+![TIMETOBEAT](https://i.imgur.com/dzu2QkU.png)
+
 HowLongToBeat has no public API, so the launcher uses IGDB's data. To turn it
 on, sign in at [dev.twitch.tv/console](https://dev.twitch.tv/console) (two-factor
 authentication must be on), register an application (OAuth redirect
