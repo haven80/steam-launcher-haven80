@@ -230,6 +230,11 @@ body.showroom .sr-note { opacity: 1; }
 .btn.star[aria-pressed="true"] { color: var(--game); border-color: var(--game); }
 .settings .seg.wrap { border-radius: 16px; width: auto; }
 .fav-mark { color: var(--game); }
+.title .c.fa { animation: flap-a .09s ease-out; }
+.title .c.fb { animation: flap-b .09s ease-out; }
+@keyframes flap-a { from { transform: scaleY(.1); } to { transform: none; } }
+@keyframes flap-b { from { transform: scaleY(.1); } to { transform: none; } }
+body.walled .hint { opacity: 0; }
 .studio-link { all: unset; cursor: pointer; color: var(--paper); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
 .studio-link:hover, .studio-link:focus-visible { text-decoration-color: currentColor; color: var(--game); }
 
@@ -302,6 +307,9 @@ body.showroom .sr-note { opacity: 1; }
       <button class="icon-btn" id="spin-btn" hidden>
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="2.5"/><circle cx="5.6" cy="5.6" r=".9" fill="currentColor" stroke="none"/><circle cx="10.4" cy="10.4" r=".9" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r=".9" fill="currentColor" stroke="none"/></svg>
       </button>
+      <button class="icon-btn" id="wall-btn" hidden>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="2" y="2.5" width="3" height="4.5" rx=".6"/><rect x="6.5" y="2.5" width="3" height="4.5" rx=".6"/><rect x="11" y="2.5" width="3" height="4.5" rx=".6"/><rect x="2" y="9" width="3" height="4.5" rx=".6"/><rect x="6.5" y="9" width="3" height="4.5" rx=".6"/><rect x="11" y="9" width="3" height="4.5" rx=".6"/></svg>
+      </button>
       <button class="icon-btn" id="year-btn" hidden>
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M3 13.5V9M6.3 13.5V5M9.7 13.5V7.5M13 13.5V2.5"/></svg>
       </button>
@@ -373,6 +381,13 @@ body.showroom .sr-note { opacity: 1; }
       <button class="chip" id="fx-daylight" data-fx="daylight"></button>
       <button class="chip cases-only" id="fx-back" data-fx="back"></button>
       <button class="chip cases-only" id="fx-disc" data-fx="disc"></button>
+      <button class="chip cases-only" id="fx-openCase" data-fx="openCase"></button>
+      <button class="chip" id="fx-rays" data-fx="rays"></button>
+      <button class="chip" id="fx-ambient" data-fx="ambient"></button>
+      <button class="chip" id="fx-shadows" data-fx="shadows"></button>
+      <button class="chip" id="fx-water" data-fx="water"></button>
+      <button class="chip" id="fx-launchFx" data-fx="launchFx"></button>
+      <button class="chip" id="fx-splitflap" data-fx="splitflap"></button>
     </div>
     <div>
       <h4 id="o-extra"></h4>
@@ -380,6 +395,7 @@ body.showroom .sr-note { opacity: 1; }
         <button class="chip" id="fx-spin" data-fx="spin"></button>
         <button class="chip" id="fx-favs" data-fx="favs"></button>
         <button class="chip" id="fx-stats" data-fx="stats"></button>
+        <button class="chip" id="fx-wall" data-fx="wall"></button>
         <button class="chip" id="fx-trailers" data-fx="trailers"></button>
         <button class="chip" id="fx-parallax" data-fx="parallax"></button>
         <button class="chip" id="fx-pad" data-fx="pad"></button>
@@ -467,8 +483,8 @@ const T = {
   it: { library: "Libreria", recent: "Recenti", hours: "Più giocati", az: "A–Z",
         summary: (i, a, h) => a > i ? `${i} installati · ${a} in libreria · ${h} h` : `${i} ${i === 1 ? "gioco" : "giochi"} · ${h} h`,
         search: "Cerca", results: n => `${n}`,
-        hintWeb: "Scrivi per cercare · <kbd>←</kbd> <kbd>→</kbd><br>Clic o <kbd>Invio</kbd> per aprire",
-        hintApp: "Scrivi per cercare · <kbd>←</kbd> <kbd>→</kbd> · <kbd>Invio</kbd> apre<br><kbd>Esc</kbd> chiude",
+        hintWeb: "Scrivi per cercare · <kbd>←</kbd> <kbd>→</kbd> · <kbd>↓</kbd> muro<br>Clic o <kbd>Invio</kbd> per aprire",
+        hintApp: "Scrivi per cercare · <kbd>←</kbd> <kbd>→</kbd> · <kbd>↓</kbd> muro<br><kbd>Invio</kbd> apre · <kbd>Esc</kbd> chiude",
         back: "← Libreria", play: "Gioca", install: "Installa", folder: "Cartella", saves: "Salvataggi", shots: "Screenshot", store: "Store",
         playtime: "Tempo di gioco", lastSession: "Ultima sessione", lastShort: "ultima sessione", installed: "Installato", disk: "Spazio su disco",
         state: "Stato", notInstalled: "non installato", notInstalledCap: "Non installato",
@@ -503,6 +519,9 @@ const T = {
         studio: "Studi", oGroup: "Studi raggruppati per", gDev: "Sviluppatore", gPub: "Editore", otherStudios: "Altri studi", unknownStudio: "Studio sconosciuto",
         developedBy: "Sviluppato da", publishedBy: "Pubblicato da", devPub: "Sviluppato e pubblicato da",
         roleDev: "Sviluppatore", rolePub: "Editore", gamesN: n => n === 1 ? "1 gioco" : `${n} giochi`, dividerHint: "Invio o clic per entrare",
+        fxOpenCase: "Custodia apribile", fxRays: "Raggi di luce", fxAmbient: "Sfondo vivo", fxShadows: "Ombre", fxWater: "Pavimento d'acqua",
+        fxLaunchFx: "Avvio a particelle", fxSplitflap: "Titolo a palette", fxWall: "Vista muro", wallTitle: "Vista muro (↓)",
+        booklet: "Libretto", oneDisc: "1 disco",
         oExtra: "Funzioni", fxSpin: "Cosa gioco?", fxFavs: "Preferiti", fxStats: "Il tuo anno", fxTrailers: "Trailer",
         fxParallax: "Parallasse", fxPad: "Controller", fxSound: "Suoni", fxCaseLogo: "Logo PC ROM",
         spinTitle: "Cosa gioco stasera?", tonight: n => `Stasera: ${n}`, yearTitleBtn: "Il tuo anno",
@@ -510,7 +529,7 @@ const T = {
         oColl: "Collezione", collAll: "Tutte", collFav: "★ Preferiti", collSteamFav: "Preferiti di Steam",
         noCollT: "Nessun gioco qui", noCollS: "Questa collezione è vuota con il filtro attuale.",
         padOpen: "Apri con il controller (View + Menu)",
-        hintPad: "<kbd>A</kbd> apri · <kbd>B</kbd> indietro · <kbd>Y</kbd> cosa gioco?<br><kbd>X</kbd> gira · <kbd>☰</kbd> preferito · <kbd>⧉</kbd> il tuo anno",
+        hintPad: "<kbd>A</kbd> apri · <kbd>B</kbd> indietro · <kbd>Y</kbd> cosa gioco?<br><kbd>X</kbd> gira · <kbd>LT</kbd> muro · <kbd>☰</kbd> preferito · <kbd>⧉</kbd> il tuo anno",
         yTitle: y => `Il tuo <em>${y}</em>`, ySince: d => `Ore contate dal ${d}, giorno per giorno`, yFull: "Ore contate giorno per giorno",
         yHours: "Ore di gioco", yDays: "Giorni di gioco", yStreak: "Serie più lunga", yGames: "Giochi aperti",
         daysN: n => n === 1 ? "1 giorno" : `${n} giorni`, yMonths: "Ore al mese", yTop: "I più giocati dell'anno", yTopAll: "I più giocati di sempre",
@@ -521,8 +540,8 @@ const T = {
   en: { library: "Library", recent: "Recent", hours: "Most played", az: "A–Z",
         summary: (i, a, h) => a > i ? `${i} installed · ${a} in library · ${h} h` : `${i} ${i === 1 ? "game" : "games"} · ${h} h`,
         search: "Search", results: n => `${n}`,
-        hintWeb: "Type to search · <kbd>←</kbd> <kbd>→</kbd><br>Click or <kbd>Enter</kbd> to open",
-        hintApp: "Type to search · <kbd>←</kbd> <kbd>→</kbd> · <kbd>Enter</kbd> opens<br><kbd>Esc</kbd> closes",
+        hintWeb: "Type to search · <kbd>←</kbd> <kbd>→</kbd> · <kbd>↓</kbd> wall<br>Click or <kbd>Enter</kbd> to open",
+        hintApp: "Type to search · <kbd>←</kbd> <kbd>→</kbd> · <kbd>↓</kbd> wall<br><kbd>Enter</kbd> opens · <kbd>Esc</kbd> closes",
         back: "← Library", play: "Play", install: "Install", folder: "Folder", saves: "Saves", shots: "Screenshots", store: "Store",
         playtime: "Playtime", lastSession: "Last played", lastShort: "last played", installed: "Installed", disk: "Size on disk",
         state: "Status", notInstalled: "not installed", notInstalledCap: "Not installed",
@@ -557,6 +576,9 @@ const T = {
         studio: "Studios", oGroup: "Group studios by", gDev: "Developer", gPub: "Publisher", otherStudios: "Other studios", unknownStudio: "Unknown studio",
         developedBy: "Developed by", publishedBy: "Published by", devPub: "Developed and published by",
         roleDev: "Developer", rolePub: "Publisher", gamesN: n => n === 1 ? "1 game" : `${n} games`, dividerHint: "Enter or click to go in",
+        fxOpenCase: "Opening case", fxRays: "Light rays", fxAmbient: "Living backdrop", fxShadows: "Shadows", fxWater: "Water floor",
+        fxLaunchFx: "Launch particles", fxSplitflap: "Split-flap title", fxWall: "Wall view", wallTitle: "Wall view (↓)",
+        booklet: "Booklet", oneDisc: "1 disc",
         oExtra: "Features", fxSpin: "What to play?", fxFavs: "Favorites", fxStats: "Your year", fxTrailers: "Trailers",
         fxParallax: "Parallax", fxPad: "Controller", fxSound: "Sounds", fxCaseLogo: "PC ROM logo",
         spinTitle: "What should I play tonight?", tonight: n => `Tonight: ${n}`, yearTitleBtn: "Your year",
@@ -564,7 +586,7 @@ const T = {
         oColl: "Collection", collAll: "All", collFav: "★ Favorites", collSteamFav: "Steam favorites",
         noCollT: "No games here", noCollS: "This collection is empty with the current filter.",
         padOpen: "Open with a controller (View + Menu)",
-        hintPad: "<kbd>A</kbd> open · <kbd>B</kbd> back · <kbd>Y</kbd> what to play?<br><kbd>X</kbd> turn · <kbd>☰</kbd> favorite · <kbd>⧉</kbd> your year",
+        hintPad: "<kbd>A</kbd> open · <kbd>B</kbd> back · <kbd>Y</kbd> what to play?<br><kbd>X</kbd> turn · <kbd>LT</kbd> wall · <kbd>☰</kbd> favorite · <kbd>⧉</kbd> your year",
         yTitle: y => `Your <em>${y}</em>`, ySince: d => `Hours counted since ${d}, day by day`, yFull: "Hours counted day by day",
         yHours: "Hours played", yDays: "Days played", yStreak: "Longest streak", yGames: "Games played",
         daysN: n => n === 1 ? "1 day" : `${n} days`, yMonths: "Hours per month", yTop: "Most played this year", yTopAll: "Most played ever",
@@ -592,6 +614,8 @@ txt("a-igdb-save", T.igdbSave); txt("igdb-help", T.igdbHelp); txt("a-quit", T.qu
 $("a-igdb-secret").placeholder = T.igdbSecret;
 txt("o-extra", T.oExtra); txt("fx-spin", T.fxSpin); txt("fx-favs", T.fxFavs); txt("fx-stats", T.fxStats); txt("fx-trailers", T.fxTrailers);
 txt("fx-parallax", T.fxParallax); txt("fx-pad", T.fxPad); txt("fx-sound", T.fxSound); txt("fx-caseLogo", T.fxCaseLogo);
+["openCase", "rays", "ambient", "shadows", "water", "launchFx", "splitflap", "wall"].forEach(k => txt("fx-" + k, T["fx" + k[0].toUpperCase() + k.slice(1)]));
+$("wall-btn").title = T.wallTitle; $("wall-btn").setAttribute("aria-label", T.wallTitle);
 txt("o-coll", T.oColl); txt("s-studio", T.studio); txt("o-group", T.oGroup); txt("g-dev", T.gDev); txt("g-pub", T.gPub); txt("l-pad", T.padOpen);
 $("spin-btn").title = T.spinTitle; $("spin-btn").setAttribute("aria-label", T.spinTitle);
 $("year-btn").title = T.yearTitleBtn; $("year-btn").setAttribute("aria-label", T.yearTitleBtn);
@@ -1083,6 +1107,7 @@ uniform vec2 uPlane; uniform float uPx; uniform float uDepth; uniform float uMir
 uniform float uHolo; uniform vec2 uPointer; uniform float uTime; uniform float uTilt; uniform sampler2D uBack; uniform float uBackOn;
 uniform sampler2D uVid; uniform float uVidMix; uniform vec2 uImgV; uniform vec2 uPar; uniform float uParZ;
 uniform sampler2D uRomTex; uniform float uRom;
+uniform float uThin; uniform float uOpen; uniform sampler2D uInner;
 varying vec2 vUv; varying float vFace; varying vec3 vN; varying float vFade;
 float hash12(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 // rainbow foil of rare cards: shifts with the pointer and the angle of the cover
@@ -1102,12 +1127,15 @@ vec2 fit(vec2 uv, vec2 plane, vec2 img){
   return vec2(uv.x * r.x + (1.0 - r.x) * 0.5, uv.y * r.y + (1.0 - r.y) * 0.5);
 }
 void main(){
-  float solid = clamp(uDepth / 18.0, 0.0, 1.0);  // 0 once the case has turned into a flat picture
+  float solid = uThin > 0.5 ? 1.0 : clamp(uDepth / 18.0, 0.0, 1.0);  // 0 once the case has turned into a flat picture
   if (vFace > 0.5 && solid < 0.05) discard;
   vec3 n = normalize(vN);
   float light = 0.5 + 0.5 * max(dot(n, normalize(vec3(-0.35, 0.5, 0.8))), 0.0);
   vec3 c;
-  if (vFace < 0.5) {
+  if (vFace < 0.5 && uOpen > 0.5) {
+    // the open case: the moulded tray, in the colour of the plastic
+    c = texture2D(uInner, vUv).rgb * (uShell * 2.4 + 0.14) * (0.72 + 0.38 * light);
+  } else if (vFace < 0.5) {
     vec2 base = (vUv - 0.5) * (1.0 - 0.05 * uHover - uParZ) + 0.5 + uPar;
     // the "PC ROM" band printed across the top of the sleeve; the cover sits under it
     float bandH = 0.075 * uRom * solid;
@@ -1234,7 +1262,8 @@ const ptrE = v2(0, 0);  // the pointer, smoothed (for the foil and the disc)
 // Saved per viewer; every effect can be dialled down or switched off.
 const FX_DEFAULT = { style: "strip", showroom: 60, curve: 100, lens: 55, reflect: true, dust: true, glow: true, tilt: true,
                      logo: true, holo: true, dof: true, daylight: true, back: true, disc: true,
-                     spin: true, favs: true, stats: true, trailers: true, parallax: true, pad: true, sound: false, caseLogo: true };
+                     spin: true, favs: true, stats: true, trailers: true, parallax: true, pad: true, sound: false, caseLogo: true,
+                     openCase: true, wall: true, launchFx: true, rays: true, ambient: true, water: false, shadows: true, splitflap: false };
 let fx = { ...FX_DEFAULT };
 try { Object.assign(fx, JSON.parse(store.get("fx", "{}"))); } catch (e) {}
 function saveFx() { store.set("fx", JSON.stringify(fx)); }
@@ -1302,9 +1331,25 @@ const counterLine = document.querySelector(".counter i");
 const postProg = program(`varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy * 2.0, 0.0, 1.0); }`, `
 uniform sampler2D tScene; uniform vec2 uRes; uniform float uLens; uniform float uSpeed;
 uniform float uReveal; uniform float uReflect; uniform float uFloor; uniform vec3 uBg; uniform float uLight; uniform float uTime;
-uniform float uDof;
+uniform float uDof; uniform float uWater; uniform float uWaterFloor; uniform vec4 uRip[4];
 varying vec2 vUv;
 float aspect;
+// water floor: a slow swell under the floor line and rings that spread out
+vec2 water(vec2 uv){
+  float below = uWaterFloor - uv.y;
+  if (uWater < 0.001 || below <= 0.0) return uv;
+  vec2 d = vec2(sin(uv.y * 220.0 / (0.15 + below * 6.0) + uTime * 1.6) * 0.0022, 0.0);
+  for (int i = 0; i < 4; i++) {
+    vec4 r = uRip[i];
+    float age = uTime - r.z;
+    if (r.w <= 0.0 || age < 0.0 || age > 3.2) continue;
+    vec2 p = (uv - r.xy) * vec2(aspect, 3.4);
+    float dist = length(p), front = age * 0.32;
+    float w = exp(-pow((dist - front) * 14.0, 2.0)) * (1.0 - age / 3.2) * r.w;
+    d += p / max(dist, 0.0001) * sin((dist - front) * 110.0) * w * 0.012;
+  }
+  return uv + d * uWater * smoothstep(0.0, 0.015, below);
+}
 vec2 barrel(vec2 uv, float k){
   vec2 c = (uv - 0.5) * vec2(aspect, 1.0);
   float rmax2 = 0.25 * (aspect * aspect + 1.0);
@@ -1312,6 +1357,7 @@ vec2 barrel(vec2 uv, float k){
   return c / vec2(aspect, 1.0) + 0.5;
 }
 vec3 scene(vec2 uv){
+  uv = water(uv);
   if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) return uBg;
   vec3 c = texture2D(tScene, uv).rgb;
   // reflection: the strip mirrored under itself, rippling and fading out
@@ -1352,7 +1398,7 @@ void main(){
 const postU = {
   tScene: { value: rt.tex }, uRes: { value: v2(1, 1) }, uLens: { value: 0 }, uSpeed: { value: 0 },
   uReveal: { value: 2 }, uReflect: { value: 0 }, uFloor: { value: 0.2 }, uBg: BG, uLight: { value: 0 }, uTime: TIME,
-  uDof: { value: 0 },
+  uDof: { value: 0 }, uWater: { value: 0 }, uWaterFloor: { value: 0.2 },
 };
 
 // Pointer position as the lens bends it, so clicks hit what the eye sees.
@@ -1374,9 +1420,18 @@ const dustBuf = (() => {
   }
   return { pos: buffer(pos), seed: buffer(seed) };
 })();
-const dustProg = program(`
+const DUST_RAYS = `
+float rayShafts(vec2 p, vec2 c, float t){
+  vec2 d = p - c; float a = atan(d.y, d.x); float r = length(d);
+  float s = pow(0.5 + 0.5 * sin(a * 7.0 + t * 0.05 + sin(a * 3.0 + t * 0.07) * 1.5), 6.0);
+  s += 0.6 * pow(0.5 + 0.5 * sin(a * 13.0 - t * 0.08 + 1.7), 10.0);
+  s += 0.4 * pow(0.5 + 0.5 * sin(a * 23.0 + t * 0.11 + 4.1), 14.0);
+  return s * exp(-r * 1.5) * smoothstep(0.0, 0.25, r);
+}`;
+const dustProg = program(DUST_RAYS + `
 attribute float seed; uniform float uTime; uniform float uScroll; uniform vec2 uSpan; uniform float uPixel;
-varying float vSeed;
+uniform vec2 uRayC; uniform float uRayPow; uniform vec2 uRes;
+varying float vSeed; varying float vRay;
 void main(){
   vSeed = seed;
   float depth = -position.z / 1050.0;
@@ -1387,14 +1442,18 @@ void main(){
   vec4 mv = viewMatrix * vec4(p, 1.0);
   gl_PointSize = (2.0 + 5.0 * seed) * uPixel * (1500.0 / -mv.z);
   gl_Position = projectionMatrix * mv;
+  // specks crossing a light ray catch the light
+  vec2 sp = (gl_Position.xy / gl_Position.w * 0.5 + 0.5) * uRes / uRes.y;
+  vRay = uRayPow > 0.001 ? rayShafts(sp, uRayC * uRes / uRes.y, uTime) * uRayPow : 0.0;
 }`, `
-uniform vec3 uColor; uniform float uTime; uniform float uAlpha; varying float vSeed;
+uniform vec3 uColor; uniform float uTime; uniform float uAlpha; varying float vSeed; varying float vRay;
 void main(){
   float d = length(gl_PointCoord - 0.5);
   float a = (1.0 - smoothstep(0.0, 0.5, d)) * (0.25 + 0.35 * sin(uTime * (0.6 + vSeed) + vSeed * 40.0) * 0.5 + 0.2);
-  gl_FragColor = vec4(uColor, a * uAlpha * 0.55);
+  gl_FragColor = vec4(uColor * (1.0 + vRay * 2.5), min(1.0, a * uAlpha * 0.55 * (1.0 + vRay * 7.0)));
 }`);
-const dustU = { uColor: glowU.uColor, uTime: TIME, uScroll: { value: 0 }, uSpan: { value: v2(1, 1) }, uAlpha: { value: 1 }, uPixel: { value: 1 }, viewMatrix: VIEW, projectionMatrix: PROJ };
+const dustU = { uColor: glowU.uColor, uTime: TIME, uScroll: { value: 0 }, uSpan: { value: v2(1, 1) }, uAlpha: { value: 1 }, uPixel: { value: 1 }, viewMatrix: VIEW, projectionMatrix: PROJ,
+                uRayC: v2(0.5, 0.55), uRayPow: { value: 0 }, uRes: glowU.uRes };
 
 // The opening: aperture, covers flying in from depth and a lens pulse.
 const lensPulse = { value: 0 };
@@ -1418,7 +1477,7 @@ function ensureLogo(it) {
   im.decoding = "async";
   im.onload = () => {
     it.logoReady = im.naturalWidth > 0;
-    if (it.logoReady && mode === "list" && list[activeIdx] === it) setInfo(activeIdx, true);
+    if (useLogoTitle(it) && mode === "list" && list[activeIdx] === it) setInfo(activeIdx, true);
   };
   im.src = it.g.logo;
   it.logoImg = im;
@@ -1567,7 +1626,7 @@ void main(){
   gl_FragColor = vec4(c, uAlpha * edge * (hub > 0.5 ? 0.9 : 1.0));
 }`);
 // The disc in the case's own frame: slid out along the case's width, turning.
-function discMatrix(it, offX, spin, diam, out) {
+function discMatrix(it, offX, spin, diam, out, offZ = 0) {
   const cy = Math.cos(it.rot.y), sy = Math.sin(it.rot.y), cx = Math.cos(it.rot.x), sx = Math.sin(it.rot.x);
   const c0 = [cy, 0, -sy], c1 = [sy * sx, cx, cy * sx], c2 = [sy * cx, -sx, cy * cx];
   const cs = Math.cos(spin), sn = Math.sin(spin);
@@ -1577,7 +1636,7 @@ function discMatrix(it, offX, spin, diam, out) {
     out[8 + k] = c2[k];
   }
   out[3] = out[7] = out[11] = 0;
-  out[12] = it.pos.x + c0[0] * offX; out[13] = it.pos.y + c0[1] * offX; out[14] = it.pos.z + c0[2] * offX; out[15] = 1;
+  out[12] = it.pos.x + c0[0] * offX + c2[0] * offZ; out[13] = it.pos.y + c0[1] * offX + c2[1] * offZ; out[14] = it.pos.z + c0[2] * offX + c2[2] * offZ; out[15] = 1;
   return out;
 }
 let detailDisc = false;
@@ -1677,7 +1736,7 @@ function makeItem(g, i) {
       uVid: { value: blank }, uVidMix: { value: 0 }, uImgV: { value: v2(16, 9) }, uRom: { value: 0 },
     };
     return { g, u, pos: { x: 0, y: 0, z: 0 }, scl: { x: 1, y: 1 }, rot: { x: 0, y: 0 }, lean: { x: 0, y: 0 }, spine: null, sort: 0, visible: false,
-             flip: 0, flipTarget: 0, back: null, backFor: "", discOut: { value: 0 }, spin: 0, coverImg: null, heroImg: null, logoImg: null,
+             flip: 0, flipTarget: 0, back: null, backFor: "", discOut: { value: 0 }, openA: { value: 0 }, booklet: null, spin: 0, coverImg: null, heroImg: null, logoImg: null,
              texA: null, texB: null, hasHero: false, heroLoading: false, state: "none", token: 0, placeholder: false, art: i, active: 0, hover: 0 };
 }
 
@@ -1738,6 +1797,7 @@ function resize() {
   dustU.uSpan.value.set(VW * 1.3, VH * 1.3);
   dustU.uPixel.value = DPR;
   if (mode === "detail") placeHero(true);
+  if (mode === "wall") { wallLayout(); wall.target = wall.scroll = wallClamp(wall.target); }
 }
 
 // ---------- input
@@ -1750,7 +1810,13 @@ const isUi = t => t.closest && t.closest("button, input, label, .detail, .settin
 addEventListener("pointerdown", e => {
   wake();
   if (!$("settings").hidden && !e.target.closest(".settings, #gear")) toggleSettings(false);
+  if (mode === "wall" && e.button === 0 && !isUi(e.target)) {
+    dragging = true; moved = 0; dragX = e.clientX; dragStart = wall.target;
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+    canvas.classList.add("dragging"); e.preventDefault(); return;
+  }
   if (mode !== "list" || !list.length || e.button > 0 || isUi(e.target) || yearOpen || spinning) return;
+  if (fx.water) { const [lx] = lensPoint(ptr.x, ptr.y); addRipple(lx * 0.5 + 0.5, 0.7); }
   dragging = true; moved = 0; dragX = e.clientX; dragStart = target;
   try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
   canvas.classList.add("dragging");
@@ -1764,10 +1830,12 @@ addEventListener("pointermove", e => {
   ptr.x = (e.clientX / VW) * 2 - 1; ptr.y = -(e.clientY / VH) * 2 + 1; ptrIn = true;
   if (!dragging) return;
   const dx = e.clientX - dragX; moved = Math.max(moved, Math.abs(dx));
+  if (mode === "wall") { wall.target = wallClamp(dragStart - dx * 1.2 / wall.colStep); return; }
   target = dragStart - dx * 1.4;
 });
 const endDrag = () => {
   if (!dragging) return; dragging = false; canvas.classList.remove("dragging");
+  if (mode === "wall") { if (moved < 6) { const it = pick(); if (it) exitWall(list.indexOf(it)); } return; }
   if (moved < 6) handleClick(); else snap();
 };
 addEventListener("pointerup", endDrag);
@@ -1777,7 +1845,11 @@ addEventListener("dragstart", e => e.preventDefault());
 canvas.addEventListener("pointerleave", () => { ptrIn = false; });
 addEventListener("wheel", e => {
   wake();
-  if (mode !== "list" || !list.length || yearOpen || spinning || (e.target.closest && e.target.closest(".settings"))) return;
+  if (e.target.closest && e.target.closest(".settings, .detail, .year")) return;
+  // Ctrl + wheel (or a pinch on a touchpad) steps back to the wall and in again
+  if (e.ctrlKey && fx.wall) { if (e.deltaY > 0 && mode === "list") enterWall(); else if (e.deltaY < 0 && mode === "wall") exitWall(wall.sel); return; }
+  if (mode === "wall") { wall.target = wallClamp(wall.target + (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) / wall.colStep * 0.9); return; }
+  if (mode !== "list" || !list.length || yearOpen || spinning) return;
   target += (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) * 0.9;
   lastWheel = performance.now();
 }, { passive: true });
@@ -1801,10 +1873,22 @@ addEventListener("keydown", e => {
   if (hotkeyCapture) { captureHotkey(e); return; }
   if (yearOpen) { if (e.key === "Escape") { e.preventDefault(); closeYear(); } return; }
   if (spinning) { if (e.key === "Escape") cancelSpin(); e.preventDefault(); return; }
+  if (launch.active) { e.preventDefault(); return; }
+  if (mode === "wall") {
+    const k = e.key;
+    if (k === "ArrowLeft" || k === "ArrowRight") { e.preventDefault(); moveWallSel(k === "ArrowRight" ? 1 : -1, 0); }
+    else if (k === "ArrowUp") { e.preventDefault(); if (wall.sel % wall.rows === 0) exitWall(wall.sel); else moveWallSel(0, -1); }
+    else if (k === "ArrowDown") { e.preventDefault(); moveWallSel(0, 1); }
+    else if (k === "Enter" || k === "Escape") { e.preventDefault(); exitWall(wall.sel); }
+    else if (!e.ctrlKey && !e.metaKey && !e.altKey && k.length === 1 && k !== " ") { exitWall(wall.sel, true); }
+    else return;
+    if (mode === "wall") return;
+  }
   // the launcher's own fields keep their keys
   if (e.target instanceof HTMLInputElement && e.target !== qEl) { if (e.key === "Escape") e.target.blur(); return; }
   if (!$("settings").hidden && e.key === "Escape") { toggleSettings(false); return; }
   if (mode !== "list") { if (e.key === "Escape") closeDetail(); return; }
+  if (e.key === "ArrowDown" && !inSearch && fx.wall) { e.preventDefault(); enterWall(); return; }
   if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
     if (inSearch && e.shiftKey) return;
     e.preventDefault(); goTo(e.key === "ArrowRight" ? 1 : -1);
@@ -2041,6 +2125,12 @@ function setInfo(i, instant) {
   meta.getAnimations().forEach(a => a.cancel());
   chars.forEach(c => c.getAnimations().forEach(a => a.cancel()));
   if (instant || reduced) { apply(); return; }
+  if (fx.splitflap && !useLogoTitle(list[i])) {
+    apply();
+    meta.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 150, fill: "backwards" });
+    startFlap(token);
+    return;
+  }
   // letters drop out, then the new title rises letter by letter
   const outs = chars.map((c, k) => c.animate([{ transform: "translateY(0)" }, { transform: "translateY(-110%)" }],
     { duration: 200, delay: k * 6, easing: "cubic-bezier(.55, 0, 1, .45)", fill: "forwards" }));
@@ -2070,8 +2160,22 @@ function heroRect() {
 function placeHero(instant) {
   const it = list[activeIdx], r = heroRect();
   const o = { duration: instant ? 0 : 1.1, ease: "expo.inOut" };
-  placeHeroLogo(detailDisc);
+  placeHeroLogo(detailDisc || detailOpen);
   backdrop.pos.x = r.x; backdrop.pos.y = r.y; backdrop.scl.x = r.w; backdrop.scl.y = r.h;
+  if (detailOpen) {
+    // the case opens like a book: lid with the booklet on the left, the tray
+    // with its disc on the right; the disc then slides out if Disc is on
+    const cw = Math.min(r.w * 0.34, r.h * 0.6 / 1.5), ch = cw * 1.5;
+    tween(it.pos, "x", r.x + cw * 0.52, o); tween(it.pos, "y", r.y - r.h * 0.04, o); tween(it.pos, "z", 20, o);
+    tween(it.scl, "x", cw, o); tween(it.scl, "y", ch, o);
+    tween(it.rot, "y", 0.16, o); tween(it.rot, "x", 0.12, o);
+    tween(it.u.uDepth, "value", cw * 0.085, o);
+    tween(it.u.uMix, "value", 0, o);
+    tween(backdrop.mix, "value", 1, { duration: instant ? 0 : 1.2, ease: "power2.out" });
+    tween(it.openA, "value", 1, { duration: instant ? 0 : 1.3, delay: instant ? 0 : .55, ease: "power3.inOut" });
+    if (detailDisc) tween(it.discOut, "value", 1, { duration: instant ? 0 : 1.3, delay: instant ? 0 : 1.75, ease: "power3.inOut" });
+    return;
+  }
   if (detailDisc) {
     // the case stays a case, turned a little, and its disc slides out of it
     const ch = Math.min(r.h * 0.6, r.w * 0.42 * 1.5), cw = ch * 2 / 3;
@@ -2183,11 +2287,17 @@ function openDetail() {
   qEl.blur();
   const it = list[activeIdx], g = it.g;
   ensureArt(it); ensureHero(it);
+  detailOpen = isCases() && fx.openCase && !it.g.divider;
   detailDisc = isCases() && fx.disc;
   it.flipTarget = 0;
-  showHeroLogo(it, detailDisc);
+  if (detailOpen) {
+    if (!trayTex) trayTex = makeTex(drawTray());
+    if (it.booklet) gl.deleteTexture(it.booklet);
+    it.booklet = makeTex(drawBooklet(it));
+  }
+  showHeroLogo(it, detailDisc || detailOpen);
   sfx.open();
-  if (detailDisc) setTimeout(() => { if (mode === "detail" && list[activeIdx] === it) sfx.disc(); }, reduced ? 0 : 800);
+  if (detailDisc) setTimeout(() => { if (mode === "detail" && list[activeIdx] === it) sfx.disc(); }, reduced ? 0 : detailOpen ? 1900 : 800);
   syncFavButton();
   requestTrailer(g);
   $("d-title").textContent = g.name;
@@ -2242,6 +2352,7 @@ function closeDetail(instant) {
   stopTrailer(instant);
   if (!instant) sfx.close();
   tween(it.discOut, "value", 0, { duration: instant ? 0 : .5, ease: "power2.inOut" });
+  tween(it.openA, "value", 0, { duration: instant ? 0 : .6, ease: "power2.inOut" });
   tween(backdrop.mix, "value", 0, { duration: instant ? 0 : .6 });
   tween(it.rot, "y", 0, o); tween(it.rot, "x", 0, o);
   tween(it.u.uFlat, "value", 0, o);
@@ -2276,6 +2387,7 @@ let toastT;
 function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2400); }
 $("play").addEventListener("click", () => {
   const g = list[activeIdx].g;
+  if (g.installed) startLaunch(list[activeIdx]);
   toast(g.installed ? T.launching(g.name) : T.installing(g.name));
   send({ type: g.installed ? "launch" : "install", id: g.id });
 });
@@ -2328,11 +2440,12 @@ if (host) {
       renderCollections();
       if (yearOpen) renderYear();
       setThemePref(m.theme, false);
+      exitWall(activeIdx, true);
       if (mode !== "list") closeDetail(true);
       buildItems(m.games || []);
     } else if (m.type === "show") {
       wake();
-      closeYear(); cancelSpin();
+      closeYear(); cancelSpin(); resetLaunch(); exitWall(activeIdx, true);
       if (mode === "detail") closeDetail(true);
       toggleSettings(false);
       if (query) setQuery("");
@@ -2419,6 +2532,8 @@ const sfx = (() => {
       tone(t + 0.1, 196, 1.6, 0.03, "sine", 294);  // the drive spinning up
     }),
     chime: () => play(t => { tone(t, 784, 0.6, 0.07); tone(t + 0.09, 1175, 0.7, 0.06); tone(t + 0.18, 1568, 0.9, 0.045); }),
+    launch: () => play(t => { noise(t, 1.6, 0.14, 300, 6000, 0.6); tone(t, 110, 1.5, 0.08, "sawtooth", 880); tone(t + 1.0, 1320, 0.6, 0.05); }),
+    flap: () => play(t => noise(t, 0.012, 0.05, 3800, 3800, 3)),
   };
 })();
 addEventListener("pointerdown", sfx.unlock, true);
@@ -2659,7 +2774,16 @@ function pollPad(now) {
   if (!held(8) && !held(9)) pad.combo = false;
   const dir = held(15) || ax > 0.5 ? 1 : held(14) || ax < -0.5 ? -1 : 0;
   const vert = (held(13) ? 1 : held(12) ? -1 : 0) || (Math.abs(ly) > 0.3 ? ly : 0) || (Math.abs(ry) > 0.2 ? ry : 0);
-  if (yearOpen) {
+  if (mode === "wall") {
+    if (down(1) || down(0)) exitWall(wall.sel);
+    else if (down(6) || down(7)) exitWall(wall.sel);
+    else {
+      const h = held(15) || ax > 0.5 ? 1 : held(14) || ax < -0.5 ? -1 : 0, v = held(13) || ly > 0.5 ? 1 : held(12) || ly < -0.5 ? -1 : 0;
+      const key = h + "," + v;
+      if (key !== "0,0" && (key !== pad.wallKey || now >= pad.next)) { moveWallSel(h, v); pad.next = now + (key !== pad.wallKey ? 320 : 120); }
+      pad.wallKey = key;
+    }
+  } else if (yearOpen) {
     if (down(1) || view) closeYear();
     if (vert) $("year").scrollBy(0, vert * 16);
   } else if (!$("settings").hidden) {
@@ -2680,6 +2804,7 @@ function pollPad(now) {
     else if (down(1)) { if (query) setQuery(""); else send({ type: "close" }); }
     else if (down(2)) { const it = list[nearest()]; if (it && !it.g.divider && isCases() && fx.back) { if (it.flipTarget === 0) flipCase(it); else it.flipTarget = 0; } }
     else if (down(3)) spinTonight();
+    else if (down(6)) enterWall();
     else if (menu) toggleFav(list[nearest()] && list[nearest()].g);
     else if (view && fx.stats) openYear();
   } else if (mode === "list" && spinning && down(1)) cancelSpin();
@@ -2818,6 +2943,7 @@ function closeYear() {
   sfx.close();
 }
 $("year-btn").addEventListener("click", openYear);
+$("wall-btn").addEventListener("click", () => { if (mode === "wall") exitWall(wall.sel); else enterWall(); });
 // From the year view straight to a game, even when a filter hides it.
 function jumpTo(id) {
   let i = list.findIndex(it => it.g.id === id);
@@ -2873,6 +2999,8 @@ let romDrawn = false;
 function applyFeatures(changed) {
   $("spin-btn").hidden = !fx.spin;
   $("year-btn").hidden = !fx.stats;
+  $("wall-btn").hidden = !fx.wall;
+  if (!fx.wall) exitWall(wall.sel, true);
   if (!fx.spin) cancelSpin();
   if (!fx.stats) closeYear();
   if (!fx.trailers) stopTrailer(true);
@@ -3030,6 +3158,396 @@ document.querySelectorAll("[data-group]").forEach(b => b.addEventListener("click
 }));
 markSeg("data-group", groupKey);
 
+// ---------- more effects
+// Each one can be switched off in the settings (Effects, Features).
+
+// Small matrix helpers (column-major, like WebGL).
+const M4 = {
+  mul(a, b, out = new Float32Array(16)) {
+    for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) {
+      out[c * 4 + r] = a[r] * b[c * 4] + a[4 + r] * b[c * 4 + 1] + a[8 + r] * b[c * 4 + 2] + a[12 + r] * b[c * 4 + 3];
+    }
+    return out;
+  },
+  trs(tx, ty, tz, ry = 0, sx = 1, sy = 1, sz = 1) {
+    const c = Math.cos(ry), s = Math.sin(ry);
+    return new Float32Array([c * sx, 0, -s * sx, 0, 0, sy, 0, 0, s * sz, 0, c * sz, 0, tx, ty, tz, 1]);
+  },
+};
+
+// Light rays: soft shafts in the halo's colour fanning out from behind the
+// centred game. The dust that crosses them lights up.
+const RAYS_GLSL = `
+float rayShafts(vec2 p, vec2 c, float t){
+  vec2 d = p - c; float a = atan(d.y, d.x); float r = length(d);
+  float s = pow(0.5 + 0.5 * sin(a * 7.0 + t * 0.05 + sin(a * 3.0 + t * 0.07) * 1.5), 6.0);
+  s += 0.6 * pow(0.5 + 0.5 * sin(a * 13.0 - t * 0.08 + 1.7), 10.0);
+  s += 0.4 * pow(0.5 + 0.5 * sin(a * 23.0 + t * 0.11 + 4.1), 14.0);
+  return s * exp(-r * 1.5) * smoothstep(0.0, 0.25, r);
+}`;
+const raysProg = program(`varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy * 2.0, 0.0, 1.0); }`, RAYS_GLSL + `
+uniform vec3 uColor; uniform vec2 uRes; uniform vec2 uCenter; uniform vec2 uHole; uniform float uTime; uniform float uPower; uniform float uLight;
+varying vec2 vUv;
+void main(){
+  vec2 p = vUv * uRes / uRes.y, c = uCenter * uRes / uRes.y;
+  vec2 q = abs(p - c) / max(uHole, vec2(0.001));
+  float outside = smoothstep(0.8, 1.3, max(q.x, q.y));
+  float a = rayShafts(p, c, uTime) * outside * uPower * mix(0.30, 0.14, uLight);
+  gl_FragColor = vec4(uColor, clamp(a, 0.0, 1.0));
+}`);
+const raysU = { uColor: glowU.uColor, uRes: glowU.uRes, uCenter: v2(0.5, 0.55), uHole: v2(0.1, 0.15), uTime: TIME, uPower: { value: 0 }, uLight: { value: 0 } };
+
+// Living backdrop: the centred game's picture, huge, blurred and drifting
+// behind everything; it dissolves into the next one as the library moves.
+const ambProg = program(`varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy * 2.0, 0.0, 1.0); }`, `
+uniform sampler2D uA; uniform sampler2D uB; uniform float uMix; uniform vec2 uRes; uniform float uTime; uniform float uPower; uniform float uLight; uniform vec3 uBg;
+varying vec2 vUv;
+vec2 cover(vec2 uv, float aspect){
+  vec2 r = vec2(min(aspect / (16.0 / 9.0), 1.0), min((16.0 / 9.0) / aspect, 1.0));
+  return (uv - 0.5) * r + 0.5;
+}
+void main(){
+  float aspect = uRes.x / uRes.y;
+  float z = 1.12 + 0.05 * sin(uTime * 0.05);
+  vec2 uv = cover((vUv - 0.5) / z + 0.5 + vec2(sin(uTime * 0.031), cos(uTime * 0.027)) * 0.03, aspect);
+  vec3 c = mix(texture2D(uA, uv).rgb, texture2D(uB, uv).rgb, uMix);
+  float v = 1.0 - smoothstep(0.25, 0.95, length((vUv - 0.5) * vec2(1.0, 1.25)));
+  float a = uPower * mix(0.42, 0.30, uLight) * (0.45 + 0.55 * v);
+  c = mix(c * 0.85, c * 0.6 + 0.4, uLight);
+  gl_FragColor = vec4(c, a);
+}`);
+const amb = { a: blank, b: blank, mix: { value: 1 }, id: null, want: null, since: 0, power: 0 };
+function ambientImage(it) {
+  const img = it.heroImg || it.coverImg;
+  if (!img) return null;
+  const c = document.createElement("canvas"); c.width = 192; c.height = 108;
+  const x = c.getContext("2d");
+  x.filter = "blur(7px) saturate(1.25)";
+  const s = Math.max(232 / img.naturalWidth, 148 / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s;
+  x.drawImage(img, (192 - w) / 2, (108 - h) / 2, w, h);
+  return c;
+}
+function updateAmbient(now, centre) {
+  if (!fx.ambient) return;
+  if (centre && !centre.g.divider && amb.want !== centre) { amb.want = centre; amb.since = now; }
+  const it = amb.want;
+  if (!it || amb.id === it.g.id || now - amb.since < 280 || Math.abs(vel) > STEP * 0.04) return;
+  if (!it.heroImg && !it.heroLoading && !it.hasHero) ensureHero(it);
+  if (!it.heroImg && it.heroLoading && now - amb.since < 1500) return;  // wait a moment for the wide picture
+  const c = ambientImage(it);
+  if (!c) return;
+  if (amb.a !== blank) gl.deleteTexture(amb.a);
+  amb.a = amb.b; amb.b = makeTex(c); amb.id = it.g.id;
+  amb.mix.value = amb.a === blank ? 1 : 0;
+  if (amb.a !== blank) tween(amb.mix, "value", 1, { duration: 1.4, ease: "power2.inOut" });
+}
+
+// Water floor: the reflection turns liquid, and rings spread where a case
+// lands or where you click.
+const ripples = new Float32Array(16);  // x, y, start, strength
+let rippleNext = 0, lastLanded = -1;
+function addRipple(x, strength = 1) {
+  if (!fx.water || reduced) return;
+  const k = rippleNext++ % 4;
+  ripples[k * 4] = x; ripples[k * 4 + 1] = floorUv(); ripples[k * 4 + 2] = TIME.value; ripples[k * 4 + 3] = strength;
+}
+const floorUv = () => 0.5 + (STRIP_Y - (isCases() ? H * CASE_SCALE / 2 : H / 2 + 6)) / VH;
+
+// Contact shadows: a soft dark patch on the floor under each case.
+const shadowProg = program(`varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0); }`, `
+uniform float uAlpha; uniform float uLight; varying vec2 vUv;
+void main(){
+  float d = length((vUv - 0.5) * 2.0);
+  float a = 1.0 - smoothstep(0.0, 1.0, d);
+  gl_FragColor = vec4(0.0, 0.0, 0.0, a * a * uAlpha * mix(0.6, 0.28, uLight));
+}`);
+let shadowMix = 0;
+function shadowMatrix(it, floorY, out) {
+  const cases = isCases(), w = it.scl.x * 1.12, depth = it.scl.x * (cases ? 0.62 : 0.4);
+  const r = it.rot.y, c = Math.cos(r), s = Math.sin(r);
+  let z = it.pos.z;
+  if (!cases) { const nx = it.pos.x / (VW * 0.5); z -= nx * nx * (160 + Math.abs(vSm) * 9) * (1 - it.u.uFlat.value) * CURVE.value; }
+  out.set([c * w, 0, -s * w, 0, s * depth, 0, c * depth, 0, 0, 1, 0, 0, it.pos.x + s * it.scl.x * 0.18, floorY + 0.5, z, 1]);
+  return out;
+}
+
+// Shelves for the wall view.
+const shelfProg = program(`
+uniform float uViewW; uniform float uCurve; varying vec2 vUv; varying float vShade;
+void main(){
+  vUv = uv;
+  vec4 wp = modelMatrix * vec4(position, 1.0);
+  float nx = wp.x / (uViewW * 0.5);
+  wp.z -= nx * nx * 160.0 * uCurve;
+  vShade = position.z;
+  gl_Position = projectionMatrix * viewMatrix * wp;
+}`, `
+uniform vec3 uColor; uniform float uAlpha; uniform float uTop; varying vec2 vUv;
+void main(){
+  vec3 c = uColor * (uTop > 0.5 ? (0.9 + 0.25 * vUv.y) : 0.7);
+  float edge = 1.0 - smoothstep(0.42, 0.5, abs(vUv.x - 0.5));
+  gl_FragColor = vec4(c, uAlpha * edge);
+}`);
+
+// Launch: the picture breaks into thousands of coloured specks that the halo
+// pulls in, and the aperture closes while the game starts.
+const LAUNCH_W = 140, LAUNCH_H = 140;
+const launchBuf = (() => {
+  const a = new Float32Array(LAUNCH_W * LAUNCH_H * 3);
+  let k = 0;
+  for (let y = 0; y < LAUNCH_H; y++) for (let x = 0; x < LAUNCH_W; x++) {
+    a[k++] = (x + 0.5) / LAUNCH_W; a[k++] = (y + 0.5) / LAUNCH_H; a[k++] = Math.random();
+  }
+  return buffer(a);
+})();
+const launchProg = program(`
+uniform float uProg; uniform vec3 uSink; uniform float uSize; uniform float uPx;
+varying vec2 vUv; varying float vA;
+void main(){
+  vec2 st = position.xy; float s = position.z;
+  vec4 base = modelMatrix * vec4(st - 0.5, 0.0, 1.0);
+  float t = clamp((uProg - s * 0.22 - (1.0 - st.y) * 0.08) / 0.7, 0.0, 1.0);
+  vec3 scatter = vec3(cos(s * 91.0), sin(s * 57.0) * 0.7 + 0.35, sin(s * 33.0) * 0.8 + 0.3) * (60.0 + 300.0 * fract(s * 13.0));
+  vec3 p = base.xyz + scatter * sin(min(t * 1.7, 1.0) * 1.5708);
+  float pull = smoothstep(0.3, 1.0, t);
+  p = mix(p, uSink + scatter * 0.08, pull * pull);
+  vec4 mv = viewMatrix * vec4(p, 1.0);
+  gl_PointSize = max(1.0, uSize * uPx * (1.25 - pull) * (1500.0 / -mv.z));
+  gl_Position = projectionMatrix * mv;
+  vUv = st; vA = 1.0 - smoothstep(0.7, 1.0, t);
+}`, `
+uniform sampler2D uTex; uniform vec2 uPlane; uniform vec2 uImg; varying vec2 vUv; varying float vA;
+vec2 fit(vec2 uv, vec2 plane, vec2 img){
+  vec2 r = vec2(min((plane.x / plane.y) / (img.x / img.y), 1.0), min((plane.y / plane.x) / (img.y / img.x), 1.0));
+  return vec2(uv.x * r.x + (1.0 - r.x) * 0.5, uv.y * r.y + (1.0 - r.y) * 0.5);
+}
+void main(){
+  float d = length(gl_PointCoord - 0.5);
+  if (d > 0.5) discard;
+  vec3 c = texture2D(uTex, fit(vUv, uPlane, uImg)).rgb * 1.15;
+  gl_FragColor = vec4(c, vA * (1.0 - smoothstep(0.3, 0.5, d)));
+}`);
+const launch = { prog: { value: 0 }, active: false, model: new Float32Array(16), tex: blank, img: v2(600, 900), plane: v2(1, 1), timer: 0, restore: null };
+function startLaunch(it) {
+  if (!fx.launchFx || reduced || launch.active) return;
+  const r = heroRect(), wide = it.u.uMix.value > 0.5 || (isCases() && it.hasHero);
+  const flatHero = !isCases() || !(detailDisc || detailOpen);
+  launch.active = true;
+  launch.tex = wide && it.texB ? it.texB : it.texA || blank;
+  launch.img.set(...(wide && it.texB ? [it.u.uImg2.value.x, it.u.uImg2.value.y] : [it.u.uImg.value.x, it.u.uImg.value.y]));
+  // the specks start from what is on screen: the picture, or the case's backdrop
+  const src = flatHero ? it : backdrop;
+  modelMatrix(src, launch.model);
+  launch.plane.set(src.scl.x, src.scl.y);
+  tween(launch.prog, "value", 1, { from: 0, duration: 1.7, ease: "power1.out" });
+  const fade = { duration: .3 };
+  tween(it.u.uAlpha, "value", 0, fade);
+  tween(backdrop.mix, "value", 0, fade);
+  tween(it.discOut, "value", 0, fade);
+  fadeTo([$("detail")], 0, 300);
+  heroLogo.classList.remove("show");
+  spot.value = 1.4; tween(spot, "value", 0, { duration: 1.8, delay: .4 });
+  sfx.launch();
+  launch.restore = () => {
+    launch.active = false; launch.prog.value = 0;
+    it.u.uAlpha.value = 1;
+    if (mode === "detail" && list[activeIdx] === it) {
+      if (isCases() && (detailDisc || detailOpen)) { backdrop.mix.value = 1; if (detailDisc) it.discOut.value = 1; }
+      fadeTo([$("detail")], 1, 400);
+      showHeroLogo(it, detailDisc || detailOpen);
+    }
+  };
+  clearTimeout(launch.timer);
+  // the aperture closes on the specks, then the launcher hides (or comes back)
+  setTimeout(() => { if (launch.active) tween(postU.uReveal, "value", 0, { duration: .7, ease: "power2.in" }); }, 950);
+  launch.timer = setTimeout(() => { if (launch.active) { launch.restore(); reveal(); } }, 2600);
+}
+function resetLaunch() {
+  if (!launch.active) return;
+  clearTimeout(launch.timer);
+  killTween(launch.prog, "value");
+  launch.restore();
+}
+
+// The opening case: in the detail view the case opens like a book, showing
+// its booklet on the inside of the lid and the disc in its tray.
+let detailOpen = false;
+let trayTex = null;
+function drawTray() {
+  const c = document.createElement("canvas"); c.width = 300; c.height = 450;
+  const x = c.getContext("2d");
+  const g = x.createLinearGradient(0, 0, 300, 450); g.addColorStop(0, "#3a3b40"); g.addColorStop(1, "#1d1e22");
+  x.fillStyle = g; x.fillRect(0, 0, 300, 450);
+  x.globalAlpha = .08; x.fillStyle = x.createPattern(grain, "repeat"); x.fillRect(0, 0, 300, 450); x.globalAlpha = 1;
+  // the moulded bed for the disc, with its hub
+  const cx = 150, cy = 225;
+  const bed = x.createRadialGradient(cx - 30, cy - 40, 20, cx, cy, 140);
+  bed.addColorStop(0, "#2a2b30"); bed.addColorStop(1, "#141518");
+  x.fillStyle = bed; x.beginPath(); x.arc(cx, cy, 140, 0, Math.PI * 2); x.fill();
+  x.strokeStyle = "rgba(255,255,255,.12)"; x.lineWidth = 2; x.beginPath(); x.arc(cx, cy, 140, 0, Math.PI * 2); x.stroke();
+  x.fillStyle = "#4a4c52"; x.beginPath(); x.arc(cx, cy, 30, 0, Math.PI * 2); x.fill();
+  for (let k = 0; k < 8; k++) {
+    const a = k / 8 * Math.PI * 2;
+    x.fillStyle = "#5c5e65"; x.beginPath(); x.arc(cx + Math.cos(a) * 18, cy + Math.sin(a) * 18, 5, 0, Math.PI * 2); x.fill();
+  }
+  // the clips that hold the booklet, on the hinge side
+  x.fillStyle = "#4a4c52";
+  [[0, 40], [0, 380]].forEach(([px, py]) => { x.beginPath(); x.roundRect(px + 4, py, 16, 30, 4); x.fill(); });
+  return c;
+}
+function drawBooklet(it) {
+  const g = it.g, info = infoCache[g.id];
+  const c = document.createElement("canvas"); c.width = 600; c.height = 900;
+  const x = c.getContext("2d");
+  x.fillStyle = "#f2efe8"; x.fillRect(0, 0, 600, 900);
+  x.globalAlpha = .05; x.fillStyle = x.createPattern(grain, "repeat"); x.fillRect(0, 0, 600, 900); x.globalAlpha = 1;
+  const img = it.heroImg || it.coverImg;
+  x.save(); x.beginPath(); x.rect(0, 0, 600, 330); x.clip();
+  if (img) {
+    const s = Math.max(600 / img.naturalWidth, 330 / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s;
+    x.drawImage(img, (600 - w) / 2, (330 - h) / 2, w, h);
+  } else { x.fillStyle = g.accent; x.fillRect(0, 0, 600, 330); }
+  x.restore();
+  x.fillStyle = "#16171a";
+  x.font = '500 15px "Cascadia Mono", Consolas, monospace';
+  x.fillText(T.booklet.toUpperCase(), 40, 380);
+  x.font = '700 46px "Bricolage Grotesque", "Segoe UI", sans-serif';
+  const lines = []; let cur = "";
+  g.name.split(" ").forEach(w => { const t = cur ? cur + " " + w : w; if (x.measureText(t).width > 520 && cur) { lines.push(cur); cur = w; } else cur = t; });
+  lines.push(cur);
+  lines.slice(0, 2).forEach((l, k) => x.fillText(l, 40, 434 + k * 50));
+  let y = 434 + Math.min(lines.length, 2) * 50 + 10;
+  x.fillStyle = g.accent; x.fillRect(40, y, 80, 4); y += 40;
+  x.fillStyle = "#3b3c40"; x.font = '400 17px "Segoe UI", sans-serif';
+  const rows = [];
+  if (g.dev.length) rows.push([T.developedBy, g.dev.join(", ")]);
+  if (g.pub.length && g.pub.join() !== g.dev.join()) rows.push([T.publishedBy, g.pub.join(", ")]);
+  rows.push([T.playtime, fmtPlay(g.min)]);
+  if (info && info.ttb && info.ttb.normally) rows.push([T.rTtb, fmtHours(info.ttb.normally)]);
+  if (info && info.reviews && info.reviews.total > 0) rows.push([T.rSteam, Math.round(info.reviews.positive / info.reviews.total * 100) + "%"]);
+  rows.slice(0, 6).forEach(([k, v]) => {
+    x.fillStyle = "#8a8780"; x.font = '400 13px "Cascadia Mono", Consolas, monospace'; x.fillText(k.toUpperCase(), 40, y);
+    x.fillStyle = "#16171a"; x.font = '500 22px "Bricolage Grotesque", "Segoe UI", sans-serif';
+    let t = v; while (t.length > 1 && x.measureText(t).width > 520) t = t.slice(0, -1);
+    x.fillText(t === v ? t : t + "…", 40, y + 28);
+    y += 62;
+  });
+  x.fillStyle = "#8a8780"; x.font = '400 13px "Cascadia Mono", Consolas, monospace';
+  x.fillText((fx.caseLogo ? "PC ROM · " : "") + T.oneDisc.toUpperCase(), 40, 870);
+  x.textAlign = "right"; x.fillText("APPID " + g.id, 560, 870);
+  return c;
+}
+function doorMatrix(it, angle, thick, out) {
+  const w = it.scl.x, h = it.scl.y, d = Math.max(it.u.uDepth.value, 0.6);
+  const caseM = modelMatrix({ pos: it.pos, rot: it.rot, scl: { x: 1, y: 1 } }, new Float32Array(16));
+  const hinge = M4.trs(-w / 2, 0, d / 2 + 0.4, -angle);
+  const local = M4.trs(w / 2, 0, thick / 2, 0, w, h, 1);
+  return out.set(M4.mul(M4.mul(caseM, hinge), local)), out;
+}
+
+// Wall view: the camera steps back and the whole library stands on shelves.
+const wallMix = { value: 0 };
+const wall = { rows: 3, cols: 1, h: 100, w: 66, colStep: 80, rowStep: 120, top: 0, scroll: 0, target: 0, sel: 0 };
+function wallLayout() {
+  const n = list.length;
+  wall.rows = n < 10 ? 2 : n < 36 ? 3 : n < 90 ? 4 : 5;
+  if (VW <= 760) wall.rows = Math.min(wall.rows, 3);
+  wall.cols = Math.max(1, Math.ceil(n / wall.rows));
+  // between the top bar and the title at the bottom
+  const avail = VH - 90 - 200;
+  wall.h = avail / wall.rows / 1.24;
+  wall.w = wall.h * 2 / 3;
+  wall.colStep = wall.w * 1.18;
+  wall.rowStep = wall.h * 1.24;
+  wall.top = (wall.rows - 1) / 2 * wall.rowStep + (200 - 90) / 2;
+}
+function wallClamp(v) {
+  const half = (VW * 0.46) / wall.colStep - 0.5;
+  const lo = Math.min(half, (wall.cols - 1) / 2), hi = Math.max((wall.cols - 1) / 2, wall.cols - 1 - half);
+  return Math.max(lo, Math.min(hi, v));
+}
+function wallFollowSel() {
+  const col = Math.floor(wall.sel / wall.rows), half = Math.max(0.5, (VW * 0.46) / wall.colStep - 1.2);
+  if (col < wall.target - half) wall.target = wallClamp(col + half);
+  else if (col > wall.target + half) wall.target = wallClamp(col - half);
+}
+function enterWall() {
+  if (!fx.wall || mode !== "list" || list.length < 3 || spinning || yearOpen) return;
+  wake(); toggleSettings(false); qEl.blur();
+  wallLayout();
+  mode = "wall";
+  wall.sel = nearest();
+  wall.scroll = wall.target = wallClamp(Math.floor(wall.sel / wall.rows));
+  tween(wallMix, "value", 1, { duration: reduced ? 0 : 1.3, ease: "expo.inOut" });
+  document.body.classList.add("walled");
+  sfx.close();
+}
+function exitWall(i, instant) {
+  if (mode !== "wall") return;
+  mode = "list";
+  i = Math.max(0, Math.min(list.length - 1, i));
+  target = scroll = i * STEP;
+  activeIdx = i;
+  setInfo(i, true);
+  tween(wallMix, "value", 0, { duration: instant || reduced ? 0 : 1.15, ease: "expo.inOut" });
+  document.body.classList.remove("walled");
+  if (!instant) { sfx.open(); lensPulse.value = 0.4; tween(lensPulse, "value", 0, { duration: 1.2, ease: "expo.out" }); }
+}
+function moveWallSel(dx, dy) {
+  const n = list.length, R = wall.rows;
+  let s = wall.sel;
+  if (dy) { const row = s % R + dy; if (row >= 0 && row < R && s + dy < n) s += dy; }
+  if (dx) s = Math.max(0, Math.min(n - 1, s + dx * R));
+  if (s !== wall.sel) { wall.sel = s; wallFollowSel(); }
+}
+// Where an item stands on the wall, blended with where it stands in the strip.
+function applyWall(it, i, e, cases) {
+  const col = Math.floor(i / wall.rows), row = i % wall.rows;
+  const wx = (col - wall.scroll) * wall.colStep, wy = wall.top - row * wall.rowStep;
+  const sel = mode === "wall" && i === wall.sel;
+  const pop = sel ? 1.07 : 1;
+  const k = cases ? 1 : 1;
+  it.pos.x += (wx - it.pos.x) * e;
+  it.pos.y += (wy - it.pos.y) * e;
+  it.pos.z += ((sel ? 40 : 0) - it.pos.z) * e;
+  it.scl.x += (wall.w * pop * k - it.scl.x) * e;
+  it.scl.y += (wall.h * pop * k - it.scl.y) * e;
+  // cases turn a little toward the middle, like a curved bookcase
+  it.rot.y += ((cases ? -wx / VW * 0.5 : 0) - it.rot.y) * e;
+  it.rot.x += (0 - it.rot.x) * e;
+  if (cases) it.u.uDepth.value += (wall.w * 0.085 - it.u.uDepth.value) * e;
+  it.sort = Math.abs(wx) / wall.colStep * e + it.sort * (1 - e);
+  const vis = Math.abs(it.pos.x) < VW * 0.62 + wall.colStep;
+  it.visible = it.visible || (vis && e > 0.02);
+  if (vis && e > 0.02) ensureArt(it);
+}
+
+// Split-flap title: the letters spin like a station board before settling.
+const FLAP_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+let flapTimer = 0;
+function startFlap(token) {
+  clearInterval(flapTimer);
+  const cs = [...$("name").querySelectorAll(".c")];
+  const finals = cs.map(c => c.textContent);
+  const ends = cs.map((c, k) => 120 + k * 32 + Math.random() * 160);
+  const t0 = performance.now();
+  let tick = 0;
+  flapTimer = setInterval(() => {
+    if (token !== infoToken) { clearInterval(flapTimer); return; }
+    const el = performance.now() - t0;
+    let busy = false;
+    cs.forEach((c, k) => {
+      if (el >= ends[k]) { if (c.textContent !== finals[k]) { c.textContent = finals[k]; c.classList.toggle("fa"); c.classList.toggle("fb", !c.classList.contains("fa")); } return; }
+      busy = true;
+      if (/\s/.test(finals[k])) return;
+      c.textContent = FLAP_CHARS[Math.floor(Math.random() * FLAP_CHARS.length)];
+      c.classList.toggle("fa"); c.classList.toggle("fb", !c.classList.contains("fa"));
+    });
+    if (++tick % 2 === 0 && busy) sfx.flap();
+    if (!busy) clearInterval(flapTimer);
+  }, 45);
+}
+
 // ---------- loop
 const MODEL = new Float32Array(16);
 let caseReflect = 0, infoPending = false, infoFirst = false;
@@ -3054,7 +3572,7 @@ function frame(now) {
   glowU.uLight.value = LIGHT;
   {
     // the halo sits behind the strip, or behind the hero in the detail view
-    const gc = glowU.uCenter.value, r = mode === "list" ? null : heroRect();
+    const gc = glowU.uCenter.value, r = mode === "list" || mode === "wall" ? null : heroRect();
     const tx = r ? (r.x + VW / 2) / VW : 0.5, ty = r ? (r.y + VH / 2) / VH : (STRIP_Y + VH / 2) / VH;
     gc.x += (tx - gc.x) * L(0.06); gc.y += (ty - gc.y) * L(0.06);
     glowU.uPower.value += ((list.length ? 1 : 0) + spot.value * 0.9 - glowU.uPower.value) * L(0.08);
@@ -3068,6 +3586,7 @@ function frame(now) {
     vel = dt > 0 ? (scroll - prev) / (dt * 60) : 0;
   } else vel = 0;
   vSm += ((reduced ? 0 : vel) - vSm) * L(0.18);
+  if (mode === "wall") wall.scroll += (wall.target - wall.scroll) * (reduced ? 1 : L(0.12));
 
   const total = list.length * STEP, cur = nearest();
   // showroom: starts after the chosen idle time, only on the library itself
@@ -3083,14 +3602,15 @@ function frame(now) {
   VIEW[12] = Math.sin(st * 0.13) * 22 * srm;
   VIEW[13] = Math.sin(st * 0.09 + 1) * 10 * srm;
   VIEW[14] = -CAM_Z + 70 * srm;  // a slow dolly in
-  const hovered = mode === "list" && !dragging && !showroomOn ? pick() : null;
+  const hovered = (mode === "list" || mode === "wall") && !dragging && !showroomOn && !launch.active ? pick() : null;
   canvas.classList.toggle("pointer", !!hovered);
   const near = VW / 2 + W * 1.5, far = Math.max(VW * 2, near + STEP * 6);
   const cases = isCases();
 
+  const hi = mode === "wall" ? wall.sel : cur, wm = wallMix.value;
   list.forEach((it, i) => {
     const u = it.u;
-    const isActive = mode !== "list" && i === activeIdx;
+    const isActive = (mode === "detail" || mode === "closing") && i === activeIdx;
     if (mode === "list" || !isActive) {
       let x = wrap(i * STEP - scroll + total / 2, total) - total / 2;
       const d = x / STEP;
@@ -3099,8 +3619,8 @@ function frame(now) {
         const cx = caseLayout(d, it);
         if (mode !== "list") { /* keep the neighbours where they were while the detail is open */ }
         x = cx;
-        if (mode === "list") u.uDepth.value += (caseDepth() - u.uDepth.value) * L(0.2);
-      } else if (mode === "list") {
+        if (mode === "list" || mode === "wall") u.uDepth.value += (caseDepth() - u.uDepth.value) * L(0.2);
+      } else if (mode === "list" || mode === "wall") {
         it.pos.x = x; it.pos.y = STRIP_Y; it.pos.z = 0; it.scl.x = W; it.scl.y = H;
         u.uDepth.value = 0;
       }
@@ -3108,12 +3628,12 @@ function frame(now) {
       it.visible = ax < near && (mode === "list" || u.uAlpha.value > 0.01);
       // a fast spin doesn't load every cover it flies past
       if (ax < near) { if (!spinning || Math.abs(vel) < STEP * 0.12) ensureArt(it); }
-      else if (ax > far) releaseArt(it);
+      else if (ax > far && wm < 0.001) releaseArt(it);
     } else {
       it.visible = true;
     }
     if (mode !== "list" && !isActive) u.uAlpha.value += ((mode === "detail" ? 0 : 1) - u.uAlpha.value) * L(0.12);
-    it.active += ((i === cur || isActive ? 1 : 0) - it.active) * L(0.1);
+    it.active += ((i === hi || isActive || (mode === "wall" && wm > 0.5) ? 1 : 0) - it.active) * L(0.1);
     it.hover += ((hovered === it ? 1 : 0) - it.hover) * L(0.1);
     // the centred cover leans toward the pointer
     const lean = mode === "list" && i === cur && hovered === it && !reduced && fx.tilt;
@@ -3123,14 +3643,15 @@ function frame(now) {
     const lx = lean ? -(ptr.y - (STRIP_Y / (VH / 2))) * 0.16 : Math.sin(st * 0.37) * 0.06 * turn;
     it.lean.y += (ly - it.lean.y) * L(0.08);
     it.lean.x += (lx - it.lean.x) * L(0.08);
-    if (!cases && mode === "list") { it.rot.y = it.lean.y; it.rot.x = it.lean.x; }
+    if (!cases && (mode === "list" || mode === "wall")) { it.rot.y = it.lean.y; it.rot.x = it.lean.x; }
+    if (wm > 0.001 && !isActive) applyWall(it, i, wm, cases);
     u.uActive.value = it.active;
     u.uHover.value = it.hover;
     u.uVel.value = vSm;
     u.uLight.value += (LIGHT - u.uLight.value) * L(0.1);
     u.uPlane.value.set(it.scl.x, it.scl.y);
     // the back turns away again as soon as the case isn't the one in front
-    if (i !== cur || mode !== "list" || showroomOn || !cases || !fx.back) it.flipTarget = 0;
+    if (i !== cur || mode !== "list" || showroomOn || !cases || !fx.back || wm > 0.01) it.flipTarget = 0;
     it.flip += (it.flipTarget - it.flip) * L(0.09);
     if (!it.flipTarget && Math.abs(it.flip) < 0.002) it.flip = 0;
     u.uHolo.value += ((fx.holo && it.g.holo && mode === "list" ? 1 : 0) - u.uHolo.value) * L(0.08);
@@ -3145,7 +3666,12 @@ function frame(now) {
     infoPending = true;
   }
   // while spinning, the title changes only once the strip slows down
-  if (infoPending && mode === "list" && n && (!spinning || Math.abs(vel) < STEP * 0.05)) {
+  if (mode === "wall" && n && wall.sel !== activeIdx) {
+    if (activeIdx >= 0) sfx.tick();
+    activeIdx = wall.sel;
+    infoPending = true;
+  }
+  if (infoPending && (mode === "list" || mode === "wall") && n && (!spinning || Math.abs(vel) < STEP * 0.05)) {
     setInfo(activeIdx, infoFirst);
     infoPending = infoFirst = false;
   }
@@ -3154,7 +3680,7 @@ function frame(now) {
   CURVE.value += (fx.curve / 100 - CURVE.value) * L(0.1);
   const speed = Math.min(Math.abs(vSm) / 30, 1);
   postU.uSpeed.value += (speed - postU.uSpeed.value) * L(0.12);
-  postU.uLens.value += (fx.lens / 100 * (1 + lensPulse.value * 1.6) - postU.uLens.value) * L(0.15);
+  postU.uLens.value += (fx.lens / 100 * (1 + lensPulse.value * 1.6) * (1 - wallMix.value * 0.75) - postU.uLens.value) * L(0.15);
   postU.uLight.value = LIGHT;
   postU.uDof.value += ((fx.dof && mode === "list" && n > 1 ? 1 : 0) - postU.uDof.value) * L(0.08);
   postU.uFloor.value = 0.5 + (STRIP_Y - H / 2 - 6) / VH;
@@ -3164,6 +3690,25 @@ function frame(now) {
   updateParallax(L);
   romMix += ((fx.caseLogo ? 1 : 0) - romMix) * L(0.08);
   dustU.uAlpha.value += ((mode === "list" ? 1 : 0.35) - dustU.uAlpha.value) * L(0.05);
+  // light rays: from behind the centred game, or the picture in the detail view
+  raysU.uPower.value += ((fx.rays && n && !reduced ? (mode === "list" ? 1 : mode === "wall" ? 0.25 : 0.7) : 0) * (1 - wm * 0.7) - raysU.uPower.value) * L(0.05);
+  raysU.uCenter.set(glowU.uCenter.value.x, glowU.uCenter.value.y + (mode === "list" ? 0.04 : 0));
+  {
+    const r = mode === "list" || mode === "wall" ? null : heroRect();
+    const hx = r ? r.w / 2 / VH : W * (cases ? CASE_SCALE : 1) / 2 / VH, hy = r ? r.h / 2 / VH : H * (cases ? CASE_SCALE : 1) / 2 / VH;
+    raysU.uHole.set(raysU.uHole.x + (hx - raysU.uHole.x) * L(0.08), raysU.uHole.y + (hy - raysU.uHole.y) * L(0.08));
+  }
+  raysU.uLight.value = LIGHT;
+  dustU.uRayC.set(raysU.uCenter.x, raysU.uCenter.y);
+  dustU.uRayPow.value = fx.dust ? raysU.uPower.value : 0;
+  // living backdrop
+  amb.power += ((fx.ambient && n ? 1 : 0) - amb.power) * L(0.04);
+  updateAmbient(now, mode === "detail" || mode === "closing" ? list[activeIdx] : list[hi]);
+  // water: a ring each time the strip settles on a game
+  postU.uWater.value += ((fx.water && mode === "list" ? 1 : 0) - postU.uWater.value) * L(0.06);
+  postU.uWaterFloor.value = floorUv();
+  if (mode === "list" && n && cur !== lastLanded && Math.abs(target - scroll) < STEP * 0.03) { if (lastLanded >= 0) addRipple(0.5, 0.8); lastLanded = cur; }
+  shadowMix += ((fx.shadows && n ? 1 : 0) * (1 - wm) - shadowMix) * L(0.08);
 
   // pass 1: the scene, into the off-screen target
   gl.bindFramebuffer(gl.FRAMEBUFFER, rt.fbo);
@@ -3173,11 +3718,25 @@ function frame(now) {
   gl.disable(gl.DEPTH_TEST);
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  if (amb.power > 0.005 && amb.b !== blank) {
+    use(ambProg, [["position", QUAD.pos, 3], ["uv", QUAD.uv, 2]]);
+    setUniforms(ambProg, { uA: amb.a === blank ? amb.b : amb.a, uB: amb.b, uMix: amb.mix, uRes: glowU.uRes, uTime: TIME, uPower: amb.power, uLight: LIGHT, uBg: BG });
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, QUAD.idx);
+    gl.drawElements(gl.TRIANGLES, QUAD.count, gl.UNSIGNED_SHORT, 0);
+  }
   if (fx.glow) {
     use(glowProg, [["position", QUAD.pos, 3], ["uv", QUAD.uv, 2]]);
     setUniforms(glowProg, glowU);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, QUAD.idx);
     gl.drawElements(gl.TRIANGLES, QUAD.count, gl.UNSIGNED_SHORT, 0);
+  }
+  if (raysU.uPower.value > 0.005) {
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    use(raysProg, [["position", QUAD.pos, 3], ["uv", QUAD.uv, 2]]);
+    setUniforms(raysProg, raysU);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, QUAD.idx);
+    gl.drawElements(gl.TRIANGLES, QUAD.count, gl.UNSIGNED_SHORT, 0);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   }
   if (fx.dust && !reduced) {
     use(dustProg, [["position", dustBuf.pos, 3], ["seed", dustBuf.seed, 1]]);
@@ -3188,8 +3747,42 @@ function frame(now) {
   const order = list.filter(it => it.visible);
   if (cases) order.sort((a, b) => b.sort - a.sort);
   if (mode !== "list" && list[activeIdx] && order.includes(list[activeIdx])) { order.splice(order.indexOf(list[activeIdx]), 1); order.push(list[activeIdx]); }
-  const act = mode !== "list" ? list[activeIdx] : null;
+  const act = mode === "detail" || mode === "closing" ? list[activeIdx] : null;
   updateTrailer(act);
+  const floorY = STRIP_Y - (cases ? H * CASE_SCALE / 2 : H / 2 + 6);
+  const drawShadows = () => {
+    if (shadowMix < 0.01) return;
+    use(shadowProg, [["position", QUAD.pos, 3], ["uv", QUAD.uv, 2]]);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, QUAD.idx);
+    setUniforms(shadowProg, { viewMatrix: VIEW, projectionMatrix: PROJ, uLight: LIGHT });
+    for (const it of order) {
+      if (it === act && mode !== "list") continue;  // the opened game no longer stands on the floor
+      const intro = it.u.uIntro.value;
+      const a = shadowMix * it.u.uAlpha.value * intro * intro * (it.g.installed ? 1 : 0.6);
+      if (a < 0.01) continue;
+      gl.uniformMatrix4fv(shadowProg.u("modelMatrix"), false, shadowMatrix(it, floorY, MODEL));
+      gl.uniform1f(shadowProg.u("uAlpha"), a);
+      gl.drawElements(gl.TRIANGLES, QUAD.count, gl.UNSIGNED_SHORT, 0);
+    }
+  };
+  const drawShelves = () => {
+    if (wm < 0.01) return;
+    use(shelfProg, [["position", GRID.pos, 3], ["uv", GRID.uv, 2]]);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GRID.idx);
+    const col = [BG[0] * (1 - LIGHT * 0.12) + 0.06 + LIGHT * -0.02, BG[1] * (1 - LIGHT * 0.12) + 0.06 + LIGHT * -0.02, BG[2] * (1 - LIGHT * 0.12) + 0.065 + LIGHT * -0.02];
+    setUniforms(shelfProg, { viewMatrix: VIEW, projectionMatrix: PROJ, uViewW: VW, uCurve: cases ? 0 : CURVE.value, uColor: col, uAlpha: wm });
+    const span = VW * 2.4, depth = wall.w * (cases ? 0.75 : 0.45);
+    for (let r = 0; r < wall.rows; r++) {
+      const y = wall.top - r * wall.rowStep - wall.h / 2 - 3;
+      // the top of the shelf, lying flat, then its front edge
+      gl.uniform1f(shelfProg.u("uTop"), 1);
+      gl.uniformMatrix4fv(shelfProg.u("modelMatrix"), false, new Float32Array([span, 0, 0, 0, 0, 0, -depth, 0, 0, 1, 0, 0, 0, y, depth * 0.1, 1]));
+      gl.drawElements(gl.TRIANGLES, GRID.count, gl.UNSIGNED_SHORT, 0);
+      gl.uniform1f(shelfProg.u("uTop"), 0);
+      gl.uniformMatrix4fv(shelfProg.u("modelMatrix"), false, new Float32Array([span, 0, 0, 0, 0, 7, 0, 0, 0, 0, 1, 0, 0, y - 3.5, depth * 0.6, 1]));
+      gl.drawElements(gl.TRIANGLES, GRID.count, gl.UNSIGNED_SHORT, 0);
+    }
+  };
   if (cases && act && backdrop.mix.value > 0.01) {
     // behind an opened case: its big picture, dimmed
     use(coverProg, [["position", GRID.pos, 3], ["uv", GRID.uv, 2]]);
@@ -3213,33 +3806,63 @@ function frame(now) {
     use(caseProg, [["position", BOX.pos, 3], ["uv", BOX.uv, 2], ["normal", BOX.nrm, 3], ["face", BOX.face, 1]]);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, BOX.idx);
     const caseUnit = setUniforms(caseProg, { viewMatrix: VIEW, projectionMatrix: PROJ, uBg: BG, uPx: DPR, uFloor: STRIP_Y - H * CASE_SCALE / 2, uH: H * CASE_SCALE, uReflect: caseReflect, uPointer: ptrE, uTime: TIME,
-                                              uPar: PAR, uParZ: PARZ, uRomTex: romTex });
-    // reflections first, mirrored under the floor
-    for (const mirror of caseReflect > 0.01 ? [1, 0] : [0]) {
+                                              uPar: PAR, uParZ: PARZ, uRomTex: romTex, uInner: trayTex || blank, uThin: 0 });
+    const bindCases = () => {
+      use(caseProg, [["position", BOX.pos, 3], ["uv", BOX.uv, 2], ["normal", BOX.nrm, 3], ["face", BOX.face, 1]]);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, BOX.idx);
+      return setUniforms(caseProg, { viewMatrix: VIEW, projectionMatrix: PROJ, uBg: BG, uPx: DPR, uFloor: STRIP_Y - H * CASE_SCALE / 2, uH: H * CASE_SCALE, uReflect: caseReflect, uPointer: ptrE, uTime: TIME,
+                                     uPar: PAR, uParZ: PARZ, uRomTex: romTex, uInner: trayTex || blank, uThin: 0 });
+    };
+    const casePass = (mirror, unit) => {
       gl.uniform1f(caseProg.u("uMirror"), mirror);
       for (const it of order) {
         if (mirror && it.u.uDepth.value < 1) continue;
         // cases fading out don't hide the ones behind them
-        gl.depthMask(it.u.uAlpha.value > 0.98);
+        gl.depthMask(it.u.uAlpha.value > 0.98 && !launch.active);
         gl.uniformMatrix4fv(caseProg.u("modelMatrix"), false, modelMatrix(it, MODEL));
-        setUniforms(caseProg, it.u, caseUnit);
+        setUniforms(caseProg, it.u, unit);
+        gl.uniform1f(caseProg.u("uOpen"), it === act && it.openA.value > 0.002 ? 1 : 0);
         gl.drawElements(gl.TRIANGLES, BOX.count, gl.UNSIGNED_SHORT, 0);
       }
+    };
+    // reflections first, mirrored under the floor
+    if (caseReflect > 0.01) casePass(1, caseUnit);
+    gl.depthMask(true);
+    // reflections lie under the floor: they never hide a real case
+    gl.clear(gl.DEPTH_BUFFER_BIT);
+    // shadows and shelves lie under the cases
+    gl.disable(gl.DEPTH_TEST);
+    drawShadows();
+    gl.enable(gl.DEPTH_TEST);
+    drawShelves();
+    const unit = bindCases();
+    casePass(0, unit);
+    // the lid of the open case, booklet on its inside
+    if (act && act.openA.value > 0.002) {
+      const un = setUniforms(caseProg, act.u, unit);
+      setUniforms(caseProg, { uBack: act.booklet || blank, uBackOn: 1, uDepth: 3, uThin: 1, uOpen: 0, uAlpha: act.u.uAlpha.value }, un);
+      gl.uniformMatrix4fv(caseProg.u("modelMatrix"), false, doorMatrix(act, act.openA.value * 2.85, 3, MODEL));
+      gl.drawElements(gl.TRIANGLES, BOX.count, gl.UNSIGNED_SHORT, 0);
+      gl.uniform1f(caseProg.u("uThin"), 0);
     }
     gl.depthMask(true);
-    // the disc, inside the case until it slides out
-    if (act && act.discOut.value > 0.001 && act.texA) {
+    // the disc, inside the case until it slides out (or lying in the open tray)
+    const inTray = act && act.openA.value > 0.02;
+    if (act && (act.discOut.value > 0.001 || inTray) && act.texA && act.u.uAlpha.value > 0.01) {
       use(discProg, [["position", DISC.pos, 3], ["uv", DISC.uv, 2]]);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, DISC.idx);
       setUniforms(discProg, {
         viewMatrix: VIEW, projectionMatrix: PROJ,
-        modelMatrix: discMatrix(act, act.discOut.value * act.scl.x * 0.66, act.spin, act.scl.x * 0.92, MODEL),
-        uTex: act.texA, uImg: act.u.uImg.value, uSpin: act.spin, uAlpha: 1, uPointer: ptrE, uLight: LIGHT,
+        modelMatrix: discMatrix(act, act.discOut.value * act.scl.x * (inTray ? 0.6 : 0.66), act.spin, act.scl.x * 0.92, MODEL,
+                                inTray ? Math.max(act.u.uDepth.value, 0.6) / 2 + 1.2 : 0),
+        uTex: act.texA, uImg: act.u.uImg.value, uSpin: act.spin, uAlpha: act.u.uAlpha.value, uPointer: ptrE, uLight: LIGHT,
       });
       gl.drawElements(gl.TRIANGLES, DISC.count, gl.UNSIGNED_SHORT, 0);
     }
     gl.disable(gl.DEPTH_TEST);
   } else {
+    drawShadows();
+    drawShelves();
     use(coverProg, [["position", GRID.pos, 3], ["uv", GRID.uv, 2]]);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GRID.idx);
     setUniforms(coverProg, { viewMatrix: VIEW, projectionMatrix: PROJ, uViewW: VW, uBg: BG, uTime: TIME, uCurve: CURVE, uPx: DPR, uPointer: ptrE, uPar: PAR, uParZ: PARZ });
@@ -3250,12 +3873,21 @@ function frame(now) {
     }
   }
 
+  // the launch specks
+  if (launch.active && launch.prog.value > 0) {
+    use(launchProg, [["position", launchBuf, 3]]);
+    setUniforms(launchProg, { viewMatrix: VIEW, projectionMatrix: PROJ, modelMatrix: launch.model, uProg: launch.prog, uSink: [glowU.uCenter.value.x * VW - VW / 2, glowU.uCenter.value.y * VH - VH / 2, -700],
+                              uSize: Math.max(launch.plane.x / LAUNCH_W, launch.plane.y / LAUNCH_H) * 1.25, uPx: DPR, uTex: launch.tex, uPlane: launch.plane, uImg: launch.img });
+    gl.drawArrays(gl.POINTS, 0, LAUNCH_W * LAUNCH_H);
+  }
+
   // pass 2: through the lens, onto the screen
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   gl.viewport(0, 0, canvas.width, canvas.height);
   gl.disable(gl.BLEND);
   use(postProg, [["position", QUAD.pos, 3], ["uv", QUAD.uv, 2]]);
   setUniforms(postProg, postU);
+  gl.uniform4fv(postProg.u("uRip"), ripples);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, QUAD.idx);
   gl.drawElements(gl.TRIANGLES, QUAD.count, gl.UNSIGNED_SHORT, 0);
 

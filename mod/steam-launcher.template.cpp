@@ -2,7 +2,7 @@
 // @id              steam-launcher
 // @name            Steam Launcher (experimental)
 // @description     A minimal, animated launcher for your Steam library: WebGL covers or 3D game cases, search, playtime, studios, your year in games and Steam news, opened with a hotkey, a controller or from the tray
-// @version         0.11
+// @version         0.12
 // @author          HaVeN80
 // @github          https://github.com/haven80
 // @include         windhawk.exe
@@ -72,6 +72,24 @@ the notification area. Press **Esc** or click elsewhere to close it.
     opens, the click of the disc. Made on the spot, no sound files.
   * **PC ROM logo** (Cases style): a band printed across the top of each case.
     An invented mark, not a real brand.
+  * **Wall view** (grid button, **↓**, Ctrl + wheel or **LT**): the camera
+    steps back and the whole library stands on shelves; click a game, or pick
+    it with the arrows and **Enter**, and the camera dives back in.
+
+  More effects, also in the settings:
+  * **Opening case** (Cases style): the case opens like a book, with a booklet
+    on the inside of the lid and the disc in its tray.
+  * **Light rays** from behind the centred game; the dust lights up as it
+    crosses them.
+  * **Living backdrop**: the game's picture, huge, blurred and drifting behind
+    everything.
+  * **Shadows** on the floor under each cover or case.
+  * **Water floor** (off by default): the reflection turns liquid and rings
+    spread where a game lands or where you click.
+  * **Launch particles**: pressing Play breaks the picture into specks that the
+    halo pulls in while the view closes.
+  * **Split-flap title** (off by default): the title spins letter by letter
+    like a station board.
 
   Moving effects stop when Windows is set to reduce animations.
 
@@ -2616,7 +2634,8 @@ void OnMessageFromPage(const std::string& json) {
         HideLauncher();
     } else if (type == "launch" && g_links.count(id)) {
         Open(L"steam://rungameid/" + std::to_wstring(id));
-        if (s.hideAfterLaunch) SetTimer(g_hwnd, kTimerHide, 700, nullptr);
+        // after the launch animation (about 1.6 s) when it is on
+        if (s.hideAfterLaunch) SetTimer(g_hwnd, kTimerHide, 1700, nullptr);
     } else if (type == "install" && g_ids.count(id) && !g_links.count(id)) {
         Open(L"steam://install/" + std::to_wstring(id));
         HideLauncher();
