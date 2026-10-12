@@ -1,0 +1,38 @@
+# Draws the program icon: three game cases fanned out on a dark tile.
+from PIL import Image, ImageDraw, ImageFilter
+S = 1024
+def case(img, cx, cy, w, h, angle, top, bottom, alpha=255):
+    layer = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    grad = Image.new("RGBA", (w, h))
+    gd = ImageDraw.Draw(grad)
+    for y in range(h):
+        t = y / (h - 1)
+        c = tuple(int(top[i] * (1 - t) + bottom[i] * t) for i in range(3)) + (alpha,)
+        gd.line([(0, y), (w, y)], fill=c)
+    mask = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, w - 1, h - 1], radius=int(w * 0.07), fill=255)
+    piece = Image.new("RGBA", (w, h), (0, 0, 0, 0)); piece.paste(grad, (0, 0), mask)
+    # spine highlight
+    ImageDraw.Draw(piece).rounded_rectangle([0, 0, int(w * 0.09), h - 1], radius=int(w * 0.05), fill=(255, 255, 255, 46))
+    piece = piece.rotate(angle, resample=Image.BICUBIC, expand=True)
+    layer.paste(piece, (cx - piece.width // 2, cy - piece.height // 2), piece)
+    shadow = layer.split()[3].filter(ImageFilter.GaussianBlur(28)).point(lambda v: int(v * 0.55))
+    sh = Image.new("RGBA", (S, S), (0, 0, 0, 0)); sh.putalpha(shadow)
+    img.alpha_composite(sh, (0, 18))
+    img.alpha_composite(layer)
+img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+tile = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+ImageDraw.Draw(tile).rounded_rectangle([40, 40, S - 40, S - 40], radius=210, fill=(18, 19, 22, 255))
+glow = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+ImageDraw.Draw(glow).ellipse([210, 230, 814, 834], fill=(217, 163, 91, 120))
+glow = glow.filter(ImageFilter.GaussianBlur(120))
+tile.alpha_composite(glow)
+m = Image.new("L", (S, S), 0); ImageDraw.Draw(m).rounded_rectangle([40, 40, S - 40, S - 40], radius=210, fill=255)
+tile.putalpha(Image.composite(tile.split()[3], Image.new("L", (S, S), 0), m))
+img.alpha_composite(tile)
+case(img, 330, 520, 330, 500, 14, (70, 92, 120), (30, 40, 58))
+case(img, 694, 520, 330, 500, -14, (120, 70, 110), (52, 30, 54))
+case(img, 512, 500, 380, 570, 0, (242, 179, 92), (168, 50, 74))
+img.save("app.png")
+img.save("app.ico", sizes=[(16, 16), (20, 20), (24, 24), (32, 32), (40, 40), (48, 48), (64, 64), (128, 128), (256, 256)])
+print("ok")
