@@ -1,10 +1,10 @@
 # Builds SteamLauncher.exe and the Windhawk mod.
 #
 # - Every push and pull request: builds both, attached to the run as "steam-launcher".
-# - Every release: when you publish a release on GitHub (tag like v1.1.0), or push
+# - Every release: when you publish a release on GitHub (tag like v1.2.0), or push
 #   such a tag, the exe, the mod and their checksums are attached to that release.
 #
-# The tag must match kVersion in standalone/host.cpp (v1.1.0 <-> L"1.1.0"),
+# The tag must match kVersion in standalone/host.cpp (v1.2.0 <-> L"1.2.0"),
 # so the exe's properties always show the released version.
 
 name: Build
