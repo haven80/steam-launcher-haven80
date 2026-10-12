@@ -13,7 +13,7 @@ The same launcher ships two ways, built from one set of sources:
 | | Standalone program | Windhawk mod |
 |---|---|---|
 | File | `SteamLauncher.exe` | `steam-launcher.wh.cpp` |
-| Status | 1.0.3 | experimental |
+| Status | 1.0.4 | experimental |
 | Settings | inside the launcher (sliders button → Program) | Windhawk's mod settings |
 | Starts | with Windows, if you turn it on | with Windhawk |
 | Needs | the WebView2 Runtime (preinstalled on Windows 10 and 11) | Windhawk |
