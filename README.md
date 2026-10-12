@@ -16,11 +16,11 @@ The same launcher ships two ways, built from one set of sources:
 | Settings | inside the launcher (sliders button → Program) | Windhawk's mod settings |
 | Starts | with Windows, if you turn it on | with Windhawk |
 | Needs | the WebView2 Runtime (preinstalled on Windows 10 and 11) | Windhawk |
-![PREVIEW3](https://i.imgur.com/hyMRPCs.jpeg)
+
 
 Download both from the [Releases](../../releases) page. Run only one of the
 two: both use **Ctrl+Alt+G** by default, and the second one can't register it.
-
+![PREVIEW3](https://i.imgur.com/hyMRPCs.jpeg)
 ## Features
 
 - Installed and not installed games, from Steam's own files: no account or API
