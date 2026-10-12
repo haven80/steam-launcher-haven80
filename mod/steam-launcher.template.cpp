@@ -1,8 +1,8 @@
 // ==WindhawkMod==
 // @id              steam-launcher
 // @name            Steam Launcher (experimental)
-// @description     A minimal, animated launcher for your Steam library: WebGL covers, search, playtime, last session and Steam news, opened with a hotkey or from the tray
-// @version         0.10
+// @description     A minimal, animated launcher for your Steam library: WebGL covers or 3D game cases, search, playtime, studios, your year in games and Steam news, opened with a hotkey, a controller or from the tray
+// @version         0.11
 // @author          HaVeN80
 // @github          https://github.com/haven80
 // @include         windhawk.exe
@@ -32,6 +32,11 @@ the notification area. Press **Esc** or click elsewhere to close it.
 * **Click** the centre cover or **Enter**: open the game.
 * **Esc**: back to the library, then close the launcher.
 * Right-click the tray icon to refresh the library.
+* **Controller** (Xbox, PlayStation and other standard pads): stick or d-pad to
+  move, **A** to open, **B** to go back, **Y** for "what should I play
+  tonight?", **X** to turn a case around, **Menu** to star a game, **View** for
+  your year. Hold **View + Menu** to open or close the launcher from anywhere
+  (ignored while a full-screen game runs).
 * The sliders button (top right) chooses which games to show (installed, all,
   not installed), the showroom (after 30 seconds, 1 or 3 minutes without
   input the library scrolls by itself, one game every few seconds, until you
@@ -49,6 +54,25 @@ the notification area. Press **Esc** or click elsewhere to close it.
   * **Disc** (Cases style): opening a game slides a spinning disc out of its
     case.
 
+  And the features, each one can be switched off too:
+  * **What to play?** (dice button): the strip spins like a slot machine and
+    lands on a game, more often one that is installed and barely played.
+  * **Favorites**: a star in a game's page; starred games come first and have a
+    filter of their own, next to your **Steam collections**.
+  * **Studios**: next to Recent, Most played and A–Z, the library grouped by
+    developer or publisher, each group opened by a divider card like in a
+    record shop. The back of each case and the game's page say who developed
+    and published it; the names lead to their group. Search also finds studios.
+  * **Your year** (chart button): hours per month, days played, streaks, the
+    games you played most and the one you picked up again after months.
+  * **Trailers**: after a moment on a game's page its short silent Steam
+    trailer fades in over the picture.
+  * **Parallax**: the picture and the logo drift apart with the mouse.
+  * **Sounds** (off by default): a tick as games pass, a rustle when a case
+    opens, the click of the disc. Made on the spot, no sound files.
+  * **PC ROM logo** (Cases style): a band printed across the top of each case.
+    An invented mark, not a real brand.
+
   Moving effects stop when Windows is set to reduce animations.
 
 ## What it shows
@@ -59,6 +83,8 @@ is needed:
 * playtime and last played date from `userdata\<id>\config\localconfig.vdf`
 * covers and hero images from Steam's library cache
 * save and screenshot folders when they exist
+* developers and publishers from `appcache\appinfo.vdf`, and your collections
+  (with a fixed list of games) from `userdata\<id>\config\cloudstorage`
 * games you own but haven't installed from Steam's local cache (`appinfo.vdf`
   and library artwork): the ones you opened at least once in the Steam library
   show up, games in your "Hidden" collection don't
@@ -71,6 +97,10 @@ and secret in the settings. All three are kept for 3 days and can be turned
 off. The news comes from Steam's public news API (`ISteamNews/GetNewsForApp`), only
 when you open a game. Turn it off in the settings to make the launcher work
 fully offline.
+
+**Your year** needs history Steam doesn't keep: the launcher writes each
+game's total playtime down whenever it grows (`playtime.tsv` in the mod's
+storage folder), so the numbers start from the day you install it.
 
 The interface follows the Windows display language (Italian or English) and the
 Windows light/dark theme, unless you choose a theme in the settings.
@@ -85,8 +115,11 @@ copied when Steam is on another drive.
 
 The interface is self-contained: its WebGL renderer and animations are part of
 the mod, and it loads nothing from the internet. The only network requests are
-the optional ones described above, both to Steam: the news of a game when you
-open it, and covers missing from Steam's cache.
+the optional ones described above, all to Steam: the news, reviews and
+Metacritic score of a game when you open it, covers missing from Steam's cache,
+and, if you stay on a game's page, the address of its micro-trailer from
+Steam's store API and the video itself from Steam's video servers (Trailers
+can be switched off in the launcher's settings).
 
 WebView2 is loaded from the installed WebView2 Runtime (preinstalled on Windows
 11 and on up-to-date Windows 10). Windhawk mods can't ship `WebView2Loader.dll`,
@@ -145,6 +178,9 @@ Variable and Cascadia Mono.
 - igdbClientSecret: ""
   $name: IGDB client secret (optional, for time to beat)
   $description: The client secret of the same Twitch application. It is stored in Windhawk's settings on this PC and only sent to Twitch to get an IGDB access token
+- gamepadOpen: true
+  $name: Open with a controller
+  $description: Hold View and Menu together on an Xbox-style controller to open or close the launcher. Ignored while a full-screen game is running
 - showNews: true
   $name: Show Steam news
   $description: Downloads the latest news of a game from Steam when you open it
@@ -162,6 +198,7 @@ Variable and Cascadia Mono.
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <winhttp.h>
+#include <xinput.h>
 #ifndef STEAM_LAUNCHER_STANDALONE
 #include <windhawk_utils.h>
 #endif
@@ -417,6 +454,7 @@ struct Settings {
     bool showRatings = true;
     std::wstring igdbClientId, igdbClientSecret;
     bool downloadArt = true;
+    bool gamepadOpen = true;
     std::wstring excluded;
 };
 
@@ -452,6 +490,7 @@ void LoadSettings() {
         while (!v->empty() && iswspace(v->front())) v->erase(v->begin());
     }
     s.downloadArt = Wh_GetIntSetting(L"downloadArt") != 0;
+    s.gamepadOpen = Wh_GetIntSetting(L"gamepadOpen") != 0;
     s.excluded = StringSetting(L"excludedAppIds");
     AcquireSRWLockExclusive(&g_settingsLock);
     g_settings = std::move(s);
@@ -567,11 +606,19 @@ bool WriteFileBytes(const std::wstring& path, const std::string& data) {
 
 std::wstring RegReadStr(HKEY root, const std::wstring& key, const wchar_t* name,
                         DWORD flags = 0) {
+    // REG_SZ first; REG_EXPAND_SZ read unexpanded and expanded here (asking
+    // for both types at once is refused by some implementations).
     wchar_t buf[2048];
     DWORD size = sizeof(buf);
-    if (RegGetValueW(root, key.c_str(), name, RRF_RT_REG_SZ | RRF_RT_REG_EXPAND_SZ | flags,
-                     nullptr, buf, &size) == ERROR_SUCCESS) {
+    if (RegGetValueW(root, key.c_str(), name, RRF_RT_REG_SZ | flags, nullptr, buf, &size) == ERROR_SUCCESS) {
         return buf;
+    }
+    size = sizeof(buf);
+    if (RegGetValueW(root, key.c_str(), name, RRF_RT_REG_EXPAND_SZ | RRF_NOEXPAND | flags, nullptr, buf, &size) ==
+        ERROR_SUCCESS) {
+        wchar_t out[2048];
+        DWORD n = ExpandEnvironmentStringsW(buf, out, ARRAYSIZE(out));
+        return n && n <= ARRAYSIZE(out) ? out : buf;
     }
     return {};
 }
@@ -833,9 +880,13 @@ private:
         if (c == '"') return String(out);
         if (c == '{' || c == '[') {
             char close = c == '{' ? '}' : ']';
-            i_++;
+            size_t start = i_++;
+            auto raw = [&]() {
+                out = s_.substr(start, i_ - start);
+                return true;
+            };
             Ws();
-            if (Eat(close)) return true;
+            if (Eat(close)) return raw();
             for (;;) {
                 Ws();
                 std::string k, v;
@@ -848,7 +899,7 @@ private:
                 if (!Value(v, depth + 1)) return false;
                 Ws();
                 if (Eat(',')) continue;
-                return Eat(close);
+                return Eat(close) && raw();
             }
         }
         while (i_ < s_.size() && s_[i_] != ',' && s_[i_] != '}' && s_[i_] != ']' &&
@@ -1057,12 +1108,17 @@ std::vector<Game> ScanSteam(const Settings& s) {
 
 // ---------------------------------------------------------------- not installed games
 
-// Names of the games in Steam's binary appinfo.vdf (formats v27, v28, v29).
+// Names, developers and publishers of the games in Steam's binary
+// appinfo.vdf (formats v27, v28, v29).
+struct Credits {
+    std::vector<std::string> developers, publishers;  // UTF-8
+};
 struct AppInfoCache {
     ULONGLONG mtime = 0;
     ULONGLONG parsedAt = 0;  // GetTickCount64
     std::set<uint32_t> known;
     std::map<uint32_t, std::wstring> gameNames;
+    std::map<uint32_t, Credits> credits;
 };
 AppInfoCache g_appInfo;
 
@@ -1091,8 +1147,20 @@ bool KvKey(KvCursor& c, std::string& key) {
     return true;
 }
 
-// Walks a binary KeyValues block, picking appinfo/common/{name,type}.
-bool KvWalk(KvCursor& c, int depth, bool inCommon, std::string& name, std::string& type) {
+// What a KeyValues walk picks up: appinfo/common/{name,type}, the developers
+// and publishers in common/associations, and extended/{developer,publisher}
+// (older apps).
+struct AppMeta {
+    std::string name, type, assocType, assocName;
+    Credits assoc, extended;
+};
+enum KvSection { kSecOther, kSecCommon, kSecAssociations, kSecAssociation, kSecExtended };
+
+void AddCredit(std::vector<std::string>& list, const std::string& v) {
+    if (!v.empty() && list.size() < 4 && std::find(list.begin(), list.end(), v) == list.end()) list.push_back(v);
+}
+
+bool KvWalk(KvCursor& c, int depth, int section, AppMeta& m) {
     if (depth > 64) return false;
     while (c.p < c.end) {
         uint8_t t = *c.p++;
@@ -1100,17 +1168,32 @@ bool KvWalk(KvCursor& c, int depth, bool inCommon, std::string& name, std::strin
         std::string key;
         if (!KvKey(c, key)) return false;
         switch (t) {
-            case 0:
-                if (!KvWalk(c, depth + 1, depth == 1 && _stricmp(key.c_str(), "common") == 0, name,
-                            type)) {
-                    return false;
+            case 0: {
+                int sub = kSecOther;
+                if (depth == 1 && _stricmp(key.c_str(), "common") == 0) sub = kSecCommon;
+                else if (depth == 1 && _stricmp(key.c_str(), "extended") == 0) sub = kSecExtended;
+                else if (section == kSecCommon && _stricmp(key.c_str(), "associations") == 0) sub = kSecAssociations;
+                else if (section == kSecAssociations) sub = kSecAssociation;
+                if (sub == kSecAssociation) {
+                    m.assocType.clear();
+                    m.assocName.clear();
+                }
+                if (!KvWalk(c, depth + 1, sub, m)) return false;
+                if (sub == kSecAssociation) {
+                    if (_stricmp(m.assocType.c_str(), "developer") == 0) AddCredit(m.assoc.developers, m.assocName);
+                    if (_stricmp(m.assocType.c_str(), "publisher") == 0) AddCredit(m.assoc.publishers, m.assocName);
                 }
                 break;
+            }
             case 1: {
                 std::string value;
                 if (!KvCString(c, value)) return false;
-                if (inCommon && _stricmp(key.c_str(), "name") == 0) name = value;
-                if (inCommon && _stricmp(key.c_str(), "type") == 0) type = value;
+                if (section == kSecCommon && _stricmp(key.c_str(), "name") == 0) m.name = value;
+                if (section == kSecCommon && _stricmp(key.c_str(), "type") == 0) m.type = value;
+                if (section == kSecAssociation && _stricmp(key.c_str(), "type") == 0) m.assocType = value;
+                if (section == kSecAssociation && _stricmp(key.c_str(), "name") == 0) m.assocName = value;
+                if (section == kSecExtended && _stricmp(key.c_str(), "developer") == 0) AddCredit(m.extended.developers, value);
+                if (section == kSecExtended && _stricmp(key.c_str(), "publisher") == 0) AddCredit(m.extended.publishers, value);
                 break;
             }
             case 5:  // wide string
@@ -1194,10 +1277,14 @@ void ParseAppInfo(const std::wstring& path, const std::set<uint32_t>& wanted) {
         if (!ReadExact(h, buf.data(), size)) break;
         g_appInfo.known.insert(appId);
         KvCursor c{buf.data() + headerSize, buf.data() + size, version >= 0x29 ? &strings : nullptr};
-        std::string name, type;
-        KvWalk(c, 0, false, name, type);
-        if (!name.empty() && _stricmp(type.c_str(), "game") == 0) {
-            g_appInfo.gameNames[appId] = Utf8ToWide(name);
+        AppMeta m;
+        KvWalk(c, 0, kSecOther, m);
+        if (!m.name.empty() && _stricmp(m.type.c_str(), "game") == 0) {
+            g_appInfo.gameNames[appId] = Utf8ToWide(m.name);
+            Credits cr;
+            cr.developers = m.assoc.developers.empty() ? m.extended.developers : m.assoc.developers;
+            cr.publishers = m.assoc.publishers.empty() ? m.extended.publishers : m.assoc.publishers;
+            if (!cr.developers.empty() || !cr.publishers.empty()) g_appInfo.credits[appId] = std::move(cr);
         }
     }
     CloseHandle(h);
@@ -1253,6 +1340,151 @@ std::set<std::wstring> SteamHiddenAppIds(const std::wstring& userDir) {
     return ids;
 }
 
+// App ids in a JSON array of numbers ("[1,2,3]").
+std::vector<uint32_t> JsonIdArray(const std::string& arr) {
+    std::vector<uint32_t> ids;
+    std::string cur;
+    for (char c : arr + ",") {
+        if (c >= '0' && c <= '9') {
+            cur += c;
+        } else if (!cur.empty()) {
+            ids.push_back((uint32_t)strtoul(cur.c_str(), nullptr, 10));
+            cur.clear();
+        }
+    }
+    return ids;
+}
+
+// The user's Steam collections with a fixed list of games, as JSON for the
+// page: [{"id":"uc-…","name":"…","ids":[…]}]. Dynamic collections (built from
+// filters) and "Hidden" are left out; "favorite" keeps an empty name.
+std::string SteamCollectionsJson(const std::wstring& userDir) {
+    std::string data;
+    if (userDir.empty() ||
+        !ReadFileBytes(userDir + L"\\config\\cloudstorage\\cloud-storage-namespace-1.json", data)) {
+        return "[]";
+    }
+    std::string out;
+    int count = 0;
+    const std::string needle = "\"user-collections.";
+    for (size_t p = data.find(needle); p != std::string::npos && count < 200; p = data.find(needle, p + 1)) {
+        // only the value of a "key" member, not the name heading each entry
+        size_t before = data.find_last_not_of(" \t\r\n", p ? p - 1 : 0);
+        if (p == 0 || before == std::string::npos || data[before] != ':') continue;
+        // the object around this key, matched brace by brace outside strings
+        size_t open = data.rfind('{', p);
+        if (open == std::string::npos) continue;
+        int depth = 0;
+        bool inStr = false;
+        size_t end = std::string::npos;
+        for (size_t i = open; i < data.size(); i++) {
+            char c = data[i];
+            if (inStr) {
+                if (c == '\\') i++;
+                else if (c == '"') inStr = false;
+            } else if (c == '"') {
+                inStr = true;
+            } else if (c == '{') {
+                depth++;
+            } else if (c == '}' && --depth == 0) {
+                end = i;
+                break;
+            }
+        }
+        if (end == std::string::npos) break;
+        std::string obj = data.substr(open, end - open + 1);
+        std::map<std::string, std::string> entry, value;
+        JsonReader entryReader(obj);
+        if (!entryReader.ReadTopLevel(entry) || entry["is_deleted"] == "true" || entry["value"].empty()) continue;
+        const std::string& valueText = entry["value"];
+        JsonReader valueReader(valueText);
+        if (!valueReader.ReadTopLevel(value)) continue;
+        std::string id = value["id"];
+        if (id.empty() || id == "hidden" || !value["filterSpec"].empty()) continue;
+        std::vector<uint32_t> ids = JsonIdArray(value["added"]);
+        if (ids.empty()) continue;
+        std::string arr;
+        for (uint32_t a : ids) arr += (arr.empty() ? "" : ",") + std::to_string(a);
+        if (!out.empty()) out += ",";
+        out += "{\"id\":" + JsonStr(Utf8ToWide(id)) + ",\"name\":" + JsonStr(Utf8ToWide(value["name"])) +
+               ",\"ids\":[" + arr + "]}";
+        count++;
+    }
+    return "[" + out + "]";
+}
+
+// ---------------------------------------------------------------- playtime history
+// Steam only keeps each game's total. The launcher writes it down whenever it
+// grows, one line per game and day (playtime.tsv in the storage folder), so the
+// page can show playtime per month, streaks and games picked up again.
+// The first line holds the day the history began: totals written that day are
+// a starting point, not time played.
+int TodayYmd() {
+    SYSTEMTIME t;
+    GetLocalTime(&t);
+    return t.wYear * 10000 + t.wMonth * 100 + t.wDay;
+}
+
+std::string UpdateHistory(const std::vector<Game>& games) {
+    // scanner thread only
+    static bool loaded = false;
+    static int since = 0;
+    static std::map<uint32_t, long long> last;
+    static std::string rows;  // "[day,id,min]," entries
+    std::wstring path = g_storage + L"\\playtime.tsv";
+    if (!loaded) {
+        loaded = true;
+        std::string data;
+        if (ReadFileBytes(path, data)) {
+            size_t pos = 0;
+            while (pos < data.size()) {
+                size_t eol = data.find('\n', pos);
+                if (eol == std::string::npos) eol = data.size();
+                std::string line = data.substr(pos, eol - pos);
+                pos = eol + 1;
+                if (line.rfind("since\t", 0) == 0) {
+                    since = atoi(line.c_str() + 6);
+                    continue;
+                }
+                int day = atoi(line.c_str());
+                size_t t1 = line.find('\t'), t2 = t1 == std::string::npos ? t1 : line.find('\t', t1 + 1);
+                if (day < 19700101 || t2 == std::string::npos) continue;
+                uint32_t id = (uint32_t)strtoul(line.c_str() + t1 + 1, nullptr, 10);
+                long long min = _atoi64(line.c_str() + t2 + 1);
+                size_t t3 = line.find('\t', t2 + 1);
+                long long played = t3 == std::string::npos ? 0 : _atoi64(line.c_str() + t3 + 1);
+                last[id] = min;
+                rows += "[" + std::to_string(day) + "," + std::to_string(id) + "," + std::to_string(min) + "," +
+                        std::to_string(played) + "],";
+            }
+        }
+    }
+    int today = TodayYmd();
+    std::string add;
+    bool fresh = since == 0;
+    if (fresh) since = today;
+    for (const auto& g : games) {
+        if (g.playMinutes <= 0) continue;
+        auto it = last.find(g.id);
+        if (it != last.end() && it->second >= g.playMinutes) continue;
+        // with the time it was last played: the next line shows how long the pause was
+        last[g.id] = g.playMinutes;
+        std::string played = std::to_string(g.lastPlayed);
+        add += std::to_string(today) + "\t" + std::to_string(g.id) + "\t" + std::to_string(g.playMinutes) + "\t" +
+               played + "\n";
+        rows += "[" + std::to_string(today) + "," + std::to_string(g.id) + "," + std::to_string(g.playMinutes) + "," +
+                played + "],";
+    }
+    if (fresh || !add.empty()) {
+        std::string data;
+        if (fresh || !ReadFileBytes(path, data)) data = "since\t" + std::to_string(since) + "\n";
+        WriteFileBytes(path, data + add);
+    }
+    std::string r = rows;
+    if (!r.empty()) r.pop_back();
+    return "{\"since\":" + std::to_string(since) + ",\"today\":" + std::to_string(today) + ",\"rows\":[" + r + "]}";
+}
+
 void ScanSteamLibrary(const Settings& s, std::vector<Game>& games) {
     std::wstring steam = GetSteamPath();
     if (steam.empty()) return;
@@ -1263,6 +1495,7 @@ void ScanSteamLibrary(const Settings& s, std::vector<Game>& games) {
     for (const auto& id : SteamHiddenAppIds(userDir)) excluded.insert(id);
     auto stats = ReadSteamStats(userDir);
     auto ids = SteamLibraryAppIds(steam, stats);
+    ids.insert(installed.begin(), installed.end());  // their developers and publishers
 
     // appinfo.vdf changes often while Steam runs: re-read it at most every
     // 30 minutes, or after 5 minutes when the library has unknown games.
@@ -1281,7 +1514,10 @@ void ScanSteamLibrary(const Settings& s, std::vector<Game>& games) {
         (missing && age > 5 * 60 * 1000)) {
         g_appInfo.known.clear();
         g_appInfo.gameNames.clear();
+        g_appInfo.credits.clear();
         ParseAppInfo(appinfo, ids);
+        Wh_Log(L"appinfo.vdf: %d games, %d with developer or publisher", (int)g_appInfo.gameNames.size(),
+               (int)g_appInfo.credits.size());
         g_appInfo.mtime = mtime;
         g_appInfo.parsedAt = now ? now : 1;
     }
@@ -1317,6 +1553,7 @@ struct GameLinks {
 
 struct LibraryData {
     std::string json;  // the games array
+    std::string extra;  // ,"collections":[…],"history":{…}
     std::map<uint32_t, GameLinks> links;  // installed games
     std::set<uint32_t> ids;               // every game sent to the page
 };
@@ -1624,11 +1861,23 @@ LibraryData BuildLibrary(const Settings& s, const std::wstring& uiDir) {
                ",\"saves\":" + (g.savesDir.empty() ? "false" : "true") +
                ",\"shots\":" + (g.shotsDir.empty() ? "false" : "true") +
                ",\"cover\":" + JsonStr(Utf8ToWide(cover)) + ",\"hero\":" + JsonStr(Utf8ToWide(hero)) +
-               ",\"logo\":" + JsonStr(Utf8ToWide(logo)) +
-               "}";
+               ",\"logo\":" + JsonStr(Utf8ToWide(logo));
+        auto cr = g_appInfo.credits.find(g.id);
+        if (cr != g_appInfo.credits.end()) {
+            auto list = [](const std::vector<std::string>& v) {
+                std::string a;
+                for (const auto& x : v) a += (a.empty() ? "" : ",") + JsonStr(Utf8ToWide(x));
+                return "[" + a + "]";
+            };
+            arr += ",\"dev\":" + list(cr->second.developers) + ",\"pub\":" + list(cr->second.publishers);
+        }
+        arr += "}";
     }
     CleanArt(uiDir, lib.ids);
     lib.json = "[" + arr + "]";
+    std::wstring steam = GetSteamPath();
+    lib.extra = ",\"collections\":" + SteamCollectionsJson(steam.empty() ? std::wstring() : GetSteamUserDir(steam)) +
+                ",\"history\":" + UpdateHistory(games);
     return lib;
 }
 
@@ -1650,6 +1899,7 @@ const UINT kMenuRefresh = 2;
 const UINT kMenuQuit = 3;
 
 HANDLE g_scanThread = nullptr;
+HANDLE g_padThread = nullptr;
 HANDLE g_uiThread = nullptr;
 HANDLE g_uiReady = nullptr;
 HWND g_hwnd = nullptr;
@@ -1662,8 +1912,13 @@ DWORD WINAPI ScanThread(LPVOID) {
         Settings s = GetSettings();
         LibraryData* lib = new LibraryData(BuildLibrary(s, g_uiDir));
         if (s.downloadArt && g_artEvent) SetEvent(g_artEvent);
-        if (lib->json != lastJson && g_hwnd) {
-            lastJson = lib->json;
+        if (lib->json + lib->extra != lastJson && g_hwnd) {
+            lastJson = lib->json + lib->extra;
+            Wh_Log(L"Library: %d games, %d bytes%s", (int)lib->ids.size(), (int)lastJson.size(),
+                   lastJson.find("\"dev\":") != std::string::npos ? L", with credits" : L"");
+#ifdef SL_DUMP_LIBRARY  // test builds only
+            WriteFileBytes(g_storage + L"\\library-dump.json", lastJson);
+#endif
             if (!PostMessageW(g_hwnd, WM_APP_LIBRARY, 0, (LPARAM)lib)) delete lib;
         } else {
             delete lib;
@@ -1960,6 +2215,99 @@ DWORD WINAPI NewsThread(LPVOID param) {
     return 0;
 }
 
+// A game's micro-trailer: the few silent seconds Steam plays when you hover
+// a game in the store. Only its address is looked up here; the page streams
+// the video from Steam's servers when it shows it.
+const UINT WM_APP_TRAILER = WM_APP + 8;  // lParam: InfoResult* (id, message)
+const UINT WM_APP_PAD = WM_APP + 9;
+
+DWORD WINAPI TrailerThread(LPVOID param) {
+    uint32_t id = (uint32_t)(UINT_PTR)param;
+    std::string query = "{\"ids\":[{\"appid\":" + std::to_string(id) +
+                        "}],\"context\":{\"language\":\"english\",\"country_code\":\"US\"},"
+                        "\"data_request\":{\"include_trailers\":true}}";
+    std::string body, webm, mp4;
+    bool ok = HttpGet(L"api.steampowered.com",
+                      L"/IStoreBrowseService/GetItems/v1/?input_json=" + Utf8ToWide(UrlEncode(query)), body);
+    size_t p = ok ? body.find("\"microtrailer\":[") : std::string::npos;
+    size_t end = p == std::string::npos ? p : body.find(']', p);
+    while (p != std::string::npos && end != std::string::npos) {
+        p = body.find("\"filename\":\"", p);
+        if (p == std::string::npos || p > end) break;
+        p += 12;
+        size_t q = body.find('"', p);
+        if (q == std::string::npos) break;
+        std::string file = body.substr(p, q - p);
+        bool safe = file.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/._-") ==
+                    std::string::npos;
+        if (safe && file.size() > 5 && file.compare(file.size() - 5, 5, ".webm") == 0 && webm.empty()) webm = file;
+        if (safe && file.size() > 4 && file.compare(file.size() - 4, 4, ".mp4") == 0 && mp4.empty()) mp4 = file;
+        p = q;
+    }
+    const std::string base = "https://video.akamai.steamstatic.com/store_trailers/";
+    std::string msg = "{\"type\":\"trailer\",\"id\":" + std::to_string(id);
+    if (!webm.empty() || !mp4.empty()) {
+        msg += ",\"webm\":" + JsonStr(Utf8ToWide(webm.empty() ? "" : base + webm)) +
+               ",\"mp4\":" + JsonStr(Utf8ToWide(mp4.empty() ? "" : base + mp4));
+    } else {
+        msg += ok ? ",\"none\":true" : ",\"error\":true";
+    }
+    msg += "}";
+    InfoResult* r = new InfoResult{id, ok ? msg : msg + "!"};  // "!": don't cache a failure
+    if (!g_hwnd || !PostMessageW(g_hwnd, WM_APP_TRAILER, 0, (LPARAM)r)) delete r;
+    return 0;
+}
+
+// ---------------------------------------------------------------- controller
+// View + Menu held together on an Xbox-style controller opens or closes the
+// launcher. Ignored while a full-screen game has the screen.
+using XInputGetState_t = DWORD(WINAPI*)(DWORD, XINPUT_STATE*);
+
+DWORD WINAPI PadThread(LPVOID) {
+    HMODULE xi = LoadLibraryW(L"xinput1_4.dll");
+    if (!xi) xi = LoadLibraryW(L"xinput9_1_0.dll");
+    auto getState = xi ? (XInputGetState_t)(void*)GetProcAddress(xi, "XInputGetState") : nullptr;
+    if (!getState) return 0;
+    bool connected[4] = {true, true, true, true};
+    ULONGLONG nextProbe = 0, heldSince = 0;
+    bool fired = false;
+    for (;;) {
+        bool on = GetSettings().gamepadOpen;
+        if (WaitForSingleObject(g_stopEvent, on ? 60 : 1000) != WAIT_TIMEOUT) break;
+        if (!on) continue;
+        ULONGLONG now = GetTickCount64();
+        // asking an empty slot is slow, so those are only checked every few seconds
+        bool probe = now >= nextProbe;
+        if (probe) nextProbe = now + 3000;
+        bool combo = false;
+        for (DWORD i = 0; i < 4; i++) {
+            if (!connected[i] && !probe) continue;
+            XINPUT_STATE st = {};
+            connected[i] = getState(i, &st) == ERROR_SUCCESS;
+            WORD b = st.Gamepad.wButtons;
+            if (connected[i] && (b & XINPUT_GAMEPAD_BACK) && (b & XINPUT_GAMEPAD_START)) combo = true;
+        }
+        if (!combo) {
+            heldSince = 0;
+            fired = false;
+            continue;
+        }
+        if (!heldSince) heldSince = now;
+        if (fired || now - heldSince < 500) continue;
+        fired = true;
+        QUERY_USER_NOTIFICATION_STATE qs = QUNS_ACCEPTS_NOTIFICATIONS;
+        HWND fg = GetForegroundWindow();
+        bool ours = fg && fg == g_hwnd;
+        if (!ours && SUCCEEDED(SHQueryUserNotificationState(&qs)) &&
+            (qs == QUNS_RUNNING_D3D_FULL_SCREEN || qs == QUNS_BUSY || qs == QUNS_PRESENTATION_MODE)) {
+            continue;
+        }
+        if (g_hwnd) PostMessageW(g_hwnd, WM_APP_PAD, 0, 0);
+    }
+    FreeLibrary(xi);
+    return 0;
+}
+
 // ---------------------------------------------------------------- UI state (UI thread only)
 
 HMODULE g_clientDll = nullptr;
@@ -1973,6 +2321,9 @@ bool g_loadErrorReported = false;
 ULONGLONG g_navTick = 0;
 bool g_visible = false;
 std::string g_gamesJson;
+std::string g_libraryExtra;
+std::map<uint32_t, std::string> g_trailerCache;  // id -> message for the page
+std::set<uint32_t> g_trailerLoading;
 std::map<uint32_t, GameLinks> g_links;
 std::set<uint32_t> g_ids;
 std::map<uint32_t, std::pair<ULONGLONG, std::string>> g_newsCache;
@@ -1993,7 +2344,7 @@ void PostLibrary() {
     if (g_gamesJson.empty()) return;
     std::string app = HostSettingsJson();
     PostJson(std::string("{\"type\":\"library\",\"theme\":\"") +
-             ThemeName(EffectiveTheme(GetSettings())) + "\",\"games\":" + g_gamesJson +
+             ThemeName(EffectiveTheme(GetSettings())) + "\",\"games\":" + g_gamesJson + g_libraryExtra +
              (app.empty() ? std::string() : ",\"app\":" + app) +
              ",\"steam\":" + (g_steamFound ? "true" : "false") + "}");
 }
@@ -2306,6 +2657,15 @@ void OnMessageFromPage(const std::string& json) {
             if (t) CloseHandle(t);
             else g_infoLoading.erase(id);
         }
+    } else if (type == "trailer" && id && g_ids.count(id)) {
+        auto it = g_trailerCache.find(id);
+        if (it != g_trailerCache.end()) {
+            PostJson(it->second);
+        } else if (g_trailerLoading.insert(id).second) {
+            HANDLE t = CreateThread(nullptr, 0, TrailerThread, (LPVOID)(UINT_PTR)id, 0, nullptr);
+            if (t) CloseHandle(t);
+            else g_trailerLoading.erase(id);
+        }
     } else if (type == "news" && id) {
         if (!s.showNews) {
             PostJson("{\"type\":\"news\",\"id\":" + std::to_string(id) + ",\"disabled\":true}");
@@ -2452,6 +2812,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         case WM_APP_LIBRARY: {
             LibraryData* lib = (LibraryData*)lp;
             g_gamesJson = std::move(lib->json);
+            g_libraryExtra = std::move(lib->extra);
             g_links = std::move(lib->links);
             g_ids = std::move(lib->ids);
             delete lib;
@@ -2465,6 +2826,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             delete r;
             return 0;
         }
+        case WM_APP_TRAILER: {
+            InfoResult* r = (InfoResult*)lp;
+            g_trailerLoading.erase(r->id);
+            std::string msg = r->json;
+            if (!msg.empty() && msg.back() == '!') msg.pop_back();
+            else g_trailerCache[r->id] = msg;
+            PostJson(msg);
+            delete r;
+            return 0;
+        }
+        case WM_APP_PAD:
+            if (g_visible && GetForegroundWindow() == hwnd) HideLauncher();
+            else ShowLauncher();
+            return 0;
         case WM_APP_NEWS: {
             NewsResult* r = (NewsResult*)lp;
             g_newsLoading.erase(r->id);
@@ -2661,6 +3036,7 @@ BOOL WhTool_ModInit() {
     g_artEvent = CreateEventW(nullptr, FALSE, FALSE, nullptr);
     if (g_artEvent) g_artThread = CreateThread(nullptr, 0, ArtThread, nullptr, 0, nullptr);
     g_scanThread = CreateThread(nullptr, 0, ScanThread, nullptr, 0, nullptr);
+    g_padThread = CreateThread(nullptr, 0, PadThread, nullptr, 0, nullptr);
     return g_scanThread != nullptr;
 }
 
@@ -2670,6 +3046,11 @@ void WhTool_ModUninit() {
         WaitForSingleObject(g_scanThread, 10000);
         CloseHandle(g_scanThread);
         g_scanThread = nullptr;
+    }
+    if (g_padThread) {
+        WaitForSingleObject(g_padThread, 5000);
+        CloseHandle(g_padThread);
+        g_padThread = nullptr;
     }
     if (g_artThread) {
         WaitForSingleObject(g_artThread, 10000);

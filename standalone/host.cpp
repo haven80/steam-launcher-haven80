@@ -18,7 +18,7 @@ SRWLOCK g_logLock = SRWLOCK_INIT;
 
 const wchar_t kRunKey[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 const wchar_t kRunValue[] = L"Steam Launcher";
-const wchar_t kVersion[] = L"1.0.4";
+const wchar_t kVersion[] = L"1.1.0";
 
 struct Setting {
     const wchar_t* key;
@@ -33,6 +33,7 @@ const Setting kSettings[] = {
     {L"downloadArt", L"1", true},          {L"showRatings", L"1", true},
     {L"igdbClientId", L"", false},         {L"igdbClientSecret", L"", false},
     {L"showNews", L"1", true},             {L"excludedAppIds", L"228980", false},
+    {L"gamepadOpen", L"1", true},
 };
 
 const Setting* FindSetting(const std::wstring& key) {

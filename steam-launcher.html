@@ -201,6 +201,7 @@ body.showroom .sr-note { opacity: 1; }
 .news .note { color: var(--mute); font-size: 13px; padding: 14px 0; }
 
 .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px); opacity: 0; background: var(--paper); color: var(--ink); font: 500 12px var(--f-mono); padding: 10px 16px; border-radius: 99px; transition: opacity .3s, transform .3s; pointer-events: none; max-width: calc(100% - 32px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.toast { z-index: 4; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 @media (max-width: 760px) {
@@ -216,6 +217,65 @@ body.showroom .sr-note { opacity: 1; }
   .detail { top: calc(70px + 38vh + 18px); left: 16px; right: 16px; width: auto; bottom: 16px; }
   .d-title { font-size: 34px; }
 }
+/* features: what to play, favourites, collections, your year */
+.icon-btn { all: unset; cursor: pointer; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 99px; color: var(--mute); transition: color .25s, background .25s; }
+.icon-btn:hover { color: var(--paper); background: var(--line); }
+.icon-btn svg { width: 16px; height: 16px; }
+.icon-btn:focus-visible { outline: 2px solid var(--game); outline-offset: 2px; }
+.icon-btn.busy { color: var(--game); }
+.icon-btn.busy svg { animation: roll .45s linear infinite; }
+@keyframes roll { to { transform: rotate(360deg); } }
+.filter-pill { font: 400 10px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--game); color: var(--game); background: none; padding: 3px 8px; border-radius: 99px; cursor: pointer; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.filter-pill:hover { background: var(--game); color: var(--on-game); }
+.btn.star[aria-pressed="true"] { color: var(--game); border-color: var(--game); }
+.settings .seg.wrap { border-radius: 16px; width: auto; }
+.fav-mark { color: var(--game); }
+.studio-link { all: unset; cursor: pointer; color: var(--paper); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.studio-link:hover, .studio-link:focus-visible { text-decoration-color: currentColor; color: var(--game); }
+
+.year { position: fixed; inset: 0; z-index: 3; overflow-y: auto; scrollbar-width: thin; background: color-mix(in srgb, var(--ink) 86%, transparent); -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); padding: max(24px, env(safe-area-inset-top, 0px)) 32px 48px; }
+.year-in { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 36px; }
+.year-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.year h2 { margin: 0; font: 300 clamp(46px, 7.4vw, 108px) var(--f-display); letter-spacing: -.045em; line-height: .9; }
+.year h2 em { font-style: normal; color: var(--game); }
+.year .y-sub { font: 400 11px var(--f-mono); color: var(--mute); letter-spacing: .06em; margin-top: 14px; }
+.year h3 { font: 400 10px var(--f-mono); text-transform: uppercase; letter-spacing: .12em; color: var(--mute); margin: 0 0 10px; }
+.y-nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.y-nums > div { padding: 18px 18px; display: flex; flex-direction: column; gap: 6px; border-left: 1px solid var(--line); min-width: 0; }
+.y-nums > div:first-child { padding-left: 0; border-left: 0; }
+.y-nums span { font: 400 10px var(--f-mono); text-transform: uppercase; letter-spacing: .12em; color: var(--mute); }
+.y-nums b { font: 300 clamp(30px, 3.6vw, 50px) var(--f-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+.y-nums small { font: 400 11px var(--f-mono); color: var(--mute); }
+.y-months { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px; height: 200px; }
+.y-month { display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; min-width: 0; }
+.y-month .col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
+.y-month i { display: block; background: var(--paper); opacity: .82; border-radius: 4px 4px 1px 1px; min-height: 2px; transform-origin: bottom; }
+.y-month.now i { background: var(--game); opacity: 1; }
+.y-month.off i { background: repeating-linear-gradient(135deg, var(--line) 0 3px, transparent 3px 7px); opacity: 1; }
+.y-month.future i { opacity: .15; }
+.y-month span, .y-month em { font: 400 10px var(--f-mono); color: var(--mute); text-align: center; letter-spacing: .04em; font-style: normal; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; }
+.y-month span { text-transform: uppercase; }
+.y-cols { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 44px; align-items: start; }
+.y-row { all: unset; box-sizing: border-box; width: 100%; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+.y-row:hover strong { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.y-row:focus-visible { outline: 2px solid var(--game); outline-offset: 2px; border-radius: 4px; }
+.y-row .n { font: 400 11px var(--f-mono); color: var(--mute); font-variant-numeric: tabular-nums; }
+.y-row strong { font: 500 15px var(--f-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.y-row .bar { display: block; margin-top: 8px; color: var(--game); }
+.y-row b { font: 500 16px var(--f-display); font-variant-numeric: tabular-nums; }
+.y-cards { display: flex; flex-direction: column; gap: 12px; }
+.y-card { border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
+.y-card .k { font: 400 10px var(--f-mono); text-transform: uppercase; letter-spacing: .12em; color: var(--mute); }
+.y-card strong { font: 400 26px var(--f-display); letter-spacing: -.02em; line-height: 1.1; }
+.y-card p, .y-note { margin: 0; color: var(--mute); font-size: 13px; line-height: 1.5; }
+@media (max-width: 760px) {
+  .year { padding-inline: 16px; }
+  .y-nums { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .y-nums > div:nth-child(3) { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+  .y-nums > div:nth-child(4) { border-top: 1px solid var(--line); }
+  .y-cols { grid-template-columns: minmax(0, 1fr); }
+  .y-months { height: 150px; gap: 4px; }
+}
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
@@ -224,7 +284,7 @@ body.showroom .sr-note { opacity: 1; }
 <div class="ui">
   <div class="top">
     <div class="left">
-      <div class="brand"><span id="t-library">Libreria</span> <small id="totals"></small> <span class="sample" id="sample" hidden>dati di esempio</span></div>
+      <div class="brand"><span id="t-library">Libreria</span> <small id="totals"></small> <span class="sample" id="sample" hidden>dati di esempio</span> <button class="filter-pill" id="coll-pill" hidden></button></div>
       <label class="search" id="search-box">
         <svg viewBox="0 0 16 16" fill="none" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5" stroke-linecap="round"/></svg>
         <input id="q" type="text" autocomplete="off" spellcheck="false">
@@ -237,7 +297,14 @@ body.showroom .sr-note { opacity: 1; }
         <button id="s-recent" data-sort="recent" aria-pressed="true"></button>
         <button id="s-hours" data-sort="hours" aria-pressed="false"></button>
         <button id="s-az" data-sort="az" aria-pressed="false"></button>
+        <button id="s-studio" data-sort="studio" aria-pressed="false"></button>
       </div>
+      <button class="icon-btn" id="spin-btn" hidden>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="2.5"/><circle cx="5.6" cy="5.6" r=".9" fill="currentColor" stroke="none"/><circle cx="10.4" cy="10.4" r=".9" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r=".9" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="icon-btn" id="year-btn" hidden>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M3 13.5V9M6.3 13.5V5M9.7 13.5V7.5M13 13.5V2.5"/></svg>
+      </button>
       <button class="gear" id="gear" aria-expanded="false" aria-controls="settings">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 4.5h7M12 4.5h2M2 11.5h2M7 11.5h7" stroke-linecap="round"/><circle cx="10.5" cy="4.5" r="1.5"/><circle cx="5.5" cy="11.5" r="1.5"/></svg>
       </button>
@@ -252,6 +319,17 @@ body.showroom .sr-note { opacity: 1; }
         <button id="v-all" data-show="all"></button>
         <button id="v-missing" data-show="missing"></button>
       </div>
+    </div>
+    <div id="group-sec">
+      <h4 id="o-group"></h4>
+      <div class="seg" role="group">
+        <button id="g-dev" data-group="dev"></button>
+        <button id="g-pub" data-group="pub"></button>
+      </div>
+    </div>
+    <div id="coll-sec" hidden>
+      <h4 id="o-coll"></h4>
+      <div class="seg wrap" role="group" id="coll-seg"></div>
     </div>
     <div>
       <h4 id="o-sr"></h4>
@@ -296,6 +374,19 @@ body.showroom .sr-note { opacity: 1; }
       <button class="chip cases-only" id="fx-back" data-fx="back"></button>
       <button class="chip cases-only" id="fx-disc" data-fx="disc"></button>
     </div>
+    <div>
+      <h4 id="o-extra"></h4>
+      <div class="toggles">
+        <button class="chip" id="fx-spin" data-fx="spin"></button>
+        <button class="chip" id="fx-favs" data-fx="favs"></button>
+        <button class="chip" id="fx-stats" data-fx="stats"></button>
+        <button class="chip" id="fx-trailers" data-fx="trailers"></button>
+        <button class="chip" id="fx-parallax" data-fx="parallax"></button>
+        <button class="chip" id="fx-pad" data-fx="pad"></button>
+        <button class="chip" id="fx-sound" data-fx="sound"></button>
+        <button class="chip cases-only" id="fx-caseLogo" data-fx="caseLogo"></button>
+      </div>
+    </div>
     <button class="reset" id="fx-reset"></button>
     <div id="app-sec" hidden>
       <h4 id="o-app"></h4>
@@ -305,6 +396,7 @@ body.showroom .sr-note { opacity: 1; }
         <div class="app-row"><span id="l-blur"></span><button class="switch" role="switch" data-app="hideOnFocusLoss" aria-labelledby="l-blur"></button></div>
         <div class="app-row"><span id="l-after"></span><button class="switch" role="switch" data-app="hideAfterLaunch" aria-labelledby="l-after"></button></div>
         <div class="app-row"><span id="l-tray"></span><button class="switch" role="switch" data-app="trayIcon" aria-labelledby="l-tray"></button></div>
+        <div class="app-row"><span id="l-pad"></span><button class="switch" role="switch" data-app="gamepadOpen" aria-labelledby="l-pad"></button></div>
         <div class="app-row"><span id="l-news"></span><button class="switch" role="switch" data-app="showNews" aria-labelledby="l-news"></button></div>
         <div class="app-row"><span id="l-ratings"></span><button class="switch" role="switch" data-app="showRatings" aria-labelledby="l-ratings"></button></div>
         <div class="app-row"><span id="l-dlart"></span><button class="switch" role="switch" data-app="downloadArt" aria-labelledby="l-dlart"></button></div>
@@ -344,6 +436,7 @@ body.showroom .sr-note { opacity: 1; }
     <div class="ratings" id="d-ratings" hidden></div>
     <div class="actions">
       <button class="btn play" id="play"></button>
+      <button class="btn star" id="a-fav" aria-pressed="false" hidden></button>
       <button class="btn" id="a-folder" data-act="install"></button>
       <button class="btn" id="a-saves" data-act="saves"></button>
       <button class="btn" id="a-shots" data-act="shots"></button>
@@ -352,6 +445,7 @@ body.showroom .sr-note { opacity: 1; }
     <div class="news" id="d-news"></div>
   </section>
 </div>
+<section class="year" id="year" hidden aria-live="polite"><div class="year-in" id="year-in"></div></section>
 <div class="toast" id="toast"></div>
 <img class="hero-logo" id="hero-logo" alt="">
 
@@ -405,7 +499,25 @@ const T = {
         size: "Finestra", sizeFull: "Schermo intero", sizeLarge: "Grande",
         igdb: "Tempo per finirlo (IGDB)", igdbSecret: "Client secret", igdbSave: "Salva", igdbOn: "Chiave salvata", igdbOff: "Non configurato",
         igdbHelp: "Gratis: crea un'applicazione su dev.twitch.tv/console (redirect http://localhost, categoria Application Integration, tipo Confidential) e incolla qui Client ID e Client secret.",
-        quit: "Esci dal programma", version: v => `Steam Launcher ${v}` },
+        quit: "Esci dal programma", version: v => `Steam Launcher ${v}`,
+        studio: "Studi", oGroup: "Studi raggruppati per", gDev: "Sviluppatore", gPub: "Editore", otherStudios: "Altri studi", unknownStudio: "Studio sconosciuto",
+        developedBy: "Sviluppato da", publishedBy: "Pubblicato da", devPub: "Sviluppato e pubblicato da",
+        roleDev: "Sviluppatore", rolePub: "Editore", gamesN: n => n === 1 ? "1 gioco" : `${n} giochi`, dividerHint: "Invio o clic per entrare",
+        oExtra: "Funzioni", fxSpin: "Cosa gioco?", fxFavs: "Preferiti", fxStats: "Il tuo anno", fxTrailers: "Trailer",
+        fxParallax: "Parallasse", fxPad: "Controller", fxSound: "Suoni", fxCaseLogo: "Logo PC ROM",
+        spinTitle: "Cosa gioco stasera?", tonight: n => `Stasera: ${n}`, yearTitleBtn: "Il tuo anno",
+        favAdd: "☆ Preferito", favOn: "★ Preferito", favAdded: n => `${n} tra i preferiti`, favRemoved: n => `${n} tolto dai preferiti`, favMark: "preferito",
+        oColl: "Collezione", collAll: "Tutte", collFav: "★ Preferiti", collSteamFav: "Preferiti di Steam",
+        noCollT: "Nessun gioco qui", noCollS: "Questa collezione è vuota con il filtro attuale.",
+        padOpen: "Apri con il controller (View + Menu)",
+        hintPad: "<kbd>A</kbd> apri · <kbd>B</kbd> indietro · <kbd>Y</kbd> cosa gioco?<br><kbd>X</kbd> gira · <kbd>☰</kbd> preferito · <kbd>⧉</kbd> il tuo anno",
+        yTitle: y => `Il tuo <em>${y}</em>`, ySince: d => `Ore contate dal ${d}, giorno per giorno`, yFull: "Ore contate giorno per giorno",
+        yHours: "Ore di gioco", yDays: "Giorni di gioco", yStreak: "Serie più lunga", yGames: "Giochi aperti",
+        daysN: n => n === 1 ? "1 giorno" : `${n} giorni`, yMonths: "Ore al mese", yTop: "I più giocati dell'anno", yTopAll: "I più giocati di sempre",
+        yBack: "Riscoperto", yBackT: g => `Ripreso dopo ${g} di pausa.`, yNoBack: "Quando riprendi un gioco dopo mesi, compare qui.",
+        yBest: "Mese migliore", yNow: "Serie in corso", yNowNone: "Nessuna partita negli ultimi giorni.",
+        yEmpty: d => `Il conteggio è partito il ${d}: ogni giorno di gioco comparirà qui.`, yBackBtn: "← Libreria",
+        yGap: d => { const y = Math.floor(d / 365), m = Math.round((d % 365) / 30.4); return d < 60 ? `${d} giorni` : y ? `${y} ${y === 1 ? "anno" : "anni"}${m ? ` e ${m} ${m === 1 ? "mese" : "mesi"}` : ""}` : `${m} mesi`; } },
   en: { library: "Library", recent: "Recent", hours: "Most played", az: "A–Z",
         summary: (i, a, h) => a > i ? `${i} installed · ${a} in library · ${h} h` : `${i} ${i === 1 ? "game" : "games"} · ${h} h`,
         search: "Search", results: n => `${n}`,
@@ -441,7 +553,25 @@ const T = {
         size: "Window", sizeFull: "Whole screen", sizeLarge: "Large",
         igdb: "Time to beat (IGDB)", igdbSecret: "Client secret", igdbSave: "Save", igdbOn: "Key saved", igdbOff: "Not set up",
         igdbHelp: "Free: create an application at dev.twitch.tv/console (redirect http://localhost, category Application Integration, type Confidential) and paste its Client ID and Client secret here.",
-        quit: "Exit the program", version: v => `Steam Launcher ${v}` },
+        quit: "Exit the program", version: v => `Steam Launcher ${v}`,
+        studio: "Studios", oGroup: "Group studios by", gDev: "Developer", gPub: "Publisher", otherStudios: "Other studios", unknownStudio: "Unknown studio",
+        developedBy: "Developed by", publishedBy: "Published by", devPub: "Developed and published by",
+        roleDev: "Developer", rolePub: "Publisher", gamesN: n => n === 1 ? "1 game" : `${n} games`, dividerHint: "Enter or click to go in",
+        oExtra: "Features", fxSpin: "What to play?", fxFavs: "Favorites", fxStats: "Your year", fxTrailers: "Trailers",
+        fxParallax: "Parallax", fxPad: "Controller", fxSound: "Sounds", fxCaseLogo: "PC ROM logo",
+        spinTitle: "What should I play tonight?", tonight: n => `Tonight: ${n}`, yearTitleBtn: "Your year",
+        favAdd: "☆ Favorite", favOn: "★ Favorite", favAdded: n => `${n} added to favorites`, favRemoved: n => `${n} removed from favorites`, favMark: "favorite",
+        oColl: "Collection", collAll: "All", collFav: "★ Favorites", collSteamFav: "Steam favorites",
+        noCollT: "No games here", noCollS: "This collection is empty with the current filter.",
+        padOpen: "Open with a controller (View + Menu)",
+        hintPad: "<kbd>A</kbd> open · <kbd>B</kbd> back · <kbd>Y</kbd> what to play?<br><kbd>X</kbd> turn · <kbd>☰</kbd> favorite · <kbd>⧉</kbd> your year",
+        yTitle: y => `Your <em>${y}</em>`, ySince: d => `Hours counted since ${d}, day by day`, yFull: "Hours counted day by day",
+        yHours: "Hours played", yDays: "Days played", yStreak: "Longest streak", yGames: "Games played",
+        daysN: n => n === 1 ? "1 day" : `${n} days`, yMonths: "Hours per month", yTop: "Most played this year", yTopAll: "Most played ever",
+        yBack: "Rediscovered", yBackT: g => `Picked up again after ${g} away.`, yNoBack: "When you pick a game up again after months, it shows up here.",
+        yBest: "Best month", yNow: "Current streak", yNowNone: "No games in the last few days.",
+        yEmpty: d => `Counting started on ${d}: every day you play will show up here.`, yBackBtn: "← Library",
+        yGap: d => { const y = Math.floor(d / 365), m = Math.round((d % 365) / 30.4); return d < 60 ? `${d} days` : y ? `${y} ${y === 1 ? "year" : "years"}${m ? ` ${m} ${m === 1 ? "month" : "months"}` : ""}` : `${m} months`; } },
 }[LANG];
 const txt = (id, s) => { $(id).textContent = s; };
 txt("t-library", T.library); txt("s-recent", T.recent); txt("s-hours", T.hours); txt("s-az", T.az);
@@ -460,6 +590,11 @@ txt("l-tray", T.tray); txt("l-news", T.newsSet); txt("l-ratings", T.ratingsSet);
 txt("l-size", T.size); txt("sz-full", T.sizeFull); txt("sz-large", T.sizeLarge); txt("l-igdb", T.igdb);
 txt("a-igdb-save", T.igdbSave); txt("igdb-help", T.igdbHelp); txt("a-quit", T.quit);
 $("a-igdb-secret").placeholder = T.igdbSecret;
+txt("o-extra", T.oExtra); txt("fx-spin", T.fxSpin); txt("fx-favs", T.fxFavs); txt("fx-stats", T.fxStats); txt("fx-trailers", T.fxTrailers);
+txt("fx-parallax", T.fxParallax); txt("fx-pad", T.fxPad); txt("fx-sound", T.fxSound); txt("fx-caseLogo", T.fxCaseLogo);
+txt("o-coll", T.oColl); txt("s-studio", T.studio); txt("o-group", T.oGroup); txt("g-dev", T.gDev); txt("g-pub", T.gPub); txt("l-pad", T.padOpen);
+$("spin-btn").title = T.spinTitle; $("spin-btn").setAttribute("aria-label", T.spinTitle);
+$("year-btn").title = T.yearTitleBtn; $("year-btn").setAttribute("aria-label", T.yearTitleBtn);
 $("q").placeholder = T.search; $("q").setAttribute("aria-label", T.search);
 $("sort").setAttribute("aria-label", "Sort"); $("gear").setAttribute("aria-label", T.oShow + " / " + T.oTheme);
 
@@ -505,7 +640,13 @@ function sampleLibrary() {
     [504230, "Celeste", 640, 900, 0, 0, 0, 0, "#ff9fc4", "#1a0f22", "#4b2a6b"],
     [220, "Half-Life 2", 0, 0, 0, 0, 0, 0, "#ffb15c", "#141210", "#5a3c1e"],
   ];
-  return S.map(([id, name, min, last, gb, inst, upd, installed, a, c0, c1]) => ({
+  const C = {  // developer | publisher
+    1145350: "Supergiant Games", 1245620: "FromSoftware, Inc.|FromSoftware, Inc.;Bandai Namco Entertainment", 1086940: "Larian Studios",
+    753640: "Mobius Digital|Annapurna Interactive", 632470: "ZA/UM", 367520: "Team Cherry", 1091500: "CD PROJEKT RED", 413150: "ConcernedApe",
+    1174180: "Rockstar Games", 620: "Valve", 292030: "CD PROJEKT RED", 105600: "Re-Logic", 504230: "Maddy Makes Games Inc.", 220: "Valve",
+  };
+  const credits = id => { const [d, p] = (C[id] || "").split("|"); return { dev: d ? d.split(";") : [], pub: (p || d) ? (p || d).split(";") : [] }; };
+  return S.map(([id, name, min, last, gb, inst, upd, installed, a, c0, c1]) => ({ ...credits(id),
     id, name, min, last: last ? Math.round(now - last * 86400) : 0, size: gb * 1073741824,
     inst: inst ? Math.round(now - inst * 86400) : 0, update: !!upd, installed: !!installed,
     cover: "", hero: "", saves: !!installed, shots: installed && id % 2 === 0, palette: [c0, c1, a],
@@ -622,6 +763,7 @@ const EASE = {
   "power3.inOut": t => t < .5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2,
   "power2.inOut": t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
   "expo.out": t => t >= 1 ? 1 : 1 - Math.pow(2, -10 * t),
+  "spin": t => 1 - Math.pow(1 - t, 5),
   "expo.inOut": t => t <= 0 ? 0 : t >= 1 ? 1 : t < .5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2,
 };
 const tweens = new Set();
@@ -853,6 +995,7 @@ void main(){
 uniform sampler2D uTex; uniform sampler2D uTex2; uniform vec2 uImg; uniform vec2 uImg2; uniform float uMix;
 uniform float uVel; uniform float uAlpha; uniform float uActive; uniform float uHover; uniform float uLight; uniform float uGhost; uniform vec3 uBg;
 uniform vec2 uPlane; uniform float uPx; uniform float uHolo; uniform vec2 uPointer; uniform float uTime; uniform float uTilt;
+uniform sampler2D uVid; uniform float uVidMix; uniform vec2 uImgV; uniform vec2 uPar; uniform float uParZ;
 varying vec2 vUv;
 float hash12(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 // rainbow foil of rare cards: shifts with the pointer and the angle of the cover
@@ -874,11 +1017,13 @@ vec3 sampleShift(sampler2D t, vec2 uv, float s){
   return vec3(texture2D(t, uv + vec2(s, 0.0)).r, texture2D(t, uv).g, texture2D(t, uv - vec2(s, 0.0)).b);
 }
 void main(){
-  vec2 base = (vUv - 0.5) * (1.0 - 0.05 * uHover) + 0.5;
+  // zoomed in a touch and shifted against the pointer in the detail view (parallax)
+  vec2 base = (vUv - 0.5) * (1.0 - 0.05 * uHover - uParZ) + 0.5 + uPar;
   float s = clamp(uVel, -40.0, 40.0) * 0.0009;
   vec3 a = sampleShift(uTex, fit(base, uPlane, uImg), s);
   vec3 c = a;
   if (uMix > 0.001) c = mix(a, sampleShift(uTex2, fit(base, uPlane, uImg2), s), uMix);
+  if (uVidMix > 0.001) c = mix(c, texture2D(uVid, fit(base, uPlane, uImgV)).rgb, uVidMix);
   float g = dot(c, vec3(0.299, 0.587, 0.114));
   vec3 dim = mix(vec3(g) * 0.55, vec3(g) * 0.45 + 0.42, uLight);
   c = mix(dim, c, 0.35 + 0.65 * uActive);
@@ -936,6 +1081,8 @@ uniform sampler2D uTex; uniform sampler2D uTex2; uniform sampler2D uSpine; unifo
 uniform float uAlpha; uniform float uActive; uniform float uHover; uniform float uLight; uniform float uGhost; uniform vec3 uBg;
 uniform vec2 uPlane; uniform float uPx; uniform float uDepth; uniform float uMirror; uniform float uReflect; uniform vec3 uShell;
 uniform float uHolo; uniform vec2 uPointer; uniform float uTime; uniform float uTilt; uniform sampler2D uBack; uniform float uBackOn;
+uniform sampler2D uVid; uniform float uVidMix; uniform vec2 uImgV; uniform vec2 uPar; uniform float uParZ;
+uniform sampler2D uRomTex; uniform float uRom;
 varying vec2 vUv; varying float vFace; varying vec3 vN; varying float vFade;
 float hash12(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 // rainbow foil of rare cards: shifts with the pointer and the angle of the cover
@@ -961,9 +1108,18 @@ void main(){
   float light = 0.5 + 0.5 * max(dot(n, normalize(vec3(-0.35, 0.5, 0.8))), 0.0);
   vec3 c;
   if (vFace < 0.5) {
-    vec2 base = (vUv - 0.5) * (1.0 - 0.05 * uHover) + 0.5;
-    c = texture2D(uTex, fit(base, uPlane, uImg)).rgb;
-    if (uMix > 0.001) c = mix(c, texture2D(uTex2, fit(base, uPlane, uImg2)).rgb, uMix);
+    vec2 base = (vUv - 0.5) * (1.0 - 0.05 * uHover - uParZ) + 0.5 + uPar;
+    // the "PC ROM" band printed across the top of the sleeve; the cover sits under it
+    float bandH = 0.075 * uRom * solid;
+    vec2 cuv = vec2(base.x, base.y / (1.0 - bandH)), cplane = uPlane * vec2(1.0, 1.0 - bandH);
+    c = texture2D(uTex, fit(cuv, cplane, uImg)).rgb;
+    if (uMix > 0.001) c = mix(c, texture2D(uTex2, fit(cuv, cplane, uImg2)).rgb, uMix);
+    if (uVidMix > 0.001) c = mix(c, texture2D(uVid, fit(cuv, cplane, uImgV)).rgb, uVidMix);
+    if (bandH > 0.0005) {
+      float top = 1.0 - bandH;
+      if (vUv.y > top) c = texture2D(uRomTex, vec2(vUv.x, (vUv.y - top) / bandH)).rgb;
+      c = mix(c, vec3(0.78, 0.79, 0.82), (1.0 - smoothstep(0.0, 1.3, abs(vUv.y - top) * uPlane.y)) * 0.7);
+    }
     // the plastic rim around the sleeve
     vec2 e = min(vUv, 1.0 - vUv) * uPlane;
     float rim = (1.0 - smoothstep(3.0, 4.5, min(e.x, e.y))) * solid;
@@ -1008,6 +1164,12 @@ function drawSpine(g, shell) {
   lg.addColorStop(0, "rgba(0,0,0,.25)"); lg.addColorStop(.45, "rgba(255,255,255,.08)"); lg.addColorStop(1, "rgba(0,0,0,.3)");
   x.fillStyle = lg; x.fillRect(0, 0, 80, 900);
   x.fillStyle = g.accent; x.globalAlpha = .9; x.fillRect(0, 0, 80, 58); x.globalAlpha = 1;
+  if (fx.caseLogo && !g.divider) {
+    // the band of the front wraps round the spine
+    const bg = x.createLinearGradient(0, 0, 80, 0); bg.addColorStop(0, "#0b0b0d"); bg.addColorStop(.5, "#1c1d21"); bg.addColorStop(1, "#0b0b0d");
+    x.fillStyle = bg; x.fillRect(0, 0, 80, 58);
+    x.fillStyle = "rgba(210,212,218,.8)"; x.fillRect(0, 57, 80, 2);
+  }
   x.save();
   x.translate(40, 92); x.rotate(Math.PI / 2);
   x.fillStyle = "#f4f1ea"; x.textBaseline = "middle";
@@ -1071,7 +1233,8 @@ const ptrE = v2(0, 0);  // the pointer, smoothed (for the foil and the disc)
 // ---------- effects
 // Saved per viewer; every effect can be dialled down or switched off.
 const FX_DEFAULT = { style: "strip", showroom: 60, curve: 100, lens: 55, reflect: true, dust: true, glow: true, tilt: true,
-                     logo: true, holo: true, dof: true, daylight: true, back: true, disc: true };
+                     logo: true, holo: true, dof: true, daylight: true, back: true, disc: true,
+                     spin: true, favs: true, stats: true, trailers: true, parallax: true, pad: true, sound: false, caseLogo: true };
 let fx = { ...FX_DEFAULT };
 try { Object.assign(fx, JSON.parse(store.get("fx", "{}"))); } catch (e) {}
 function saveFx() { store.set("fx", JSON.stringify(fx)); }
@@ -1097,8 +1260,9 @@ function syncFxUi() {
 document.querySelectorAll("[data-fx]").forEach(b => b.addEventListener("click", () => {
   if (b.getAttribute("aria-disabled") === "true") return;
   fx[b.dataset.fx] = !fx[b.dataset.fx]; syncFxUi(); saveFx();
+  applyFeatures(b.dataset.fx);
 }));
-$("fx-reset").addEventListener("click", () => { fx = { ...FX_DEFAULT, style: fx.style }; syncFxUi(); saveFx(); });
+$("fx-reset").addEventListener("click", () => { fx = { ...FX_DEFAULT, style: fx.style }; syncFxUi(); saveFx(); applyFeatures("reset"); });
 document.querySelectorAll("[data-style]").forEach(b => b.addEventListener("click", () => {
   if (b.dataset.style === fx.style || mode !== "list") return;
   fx.style = b.dataset.style; syncFxUi(); saveFx();
@@ -1283,7 +1447,7 @@ function placeHeroLogo(top) {
 const infoCache = {};
 function drawBack(it) {
   const g = it.g, info = infoCache[g.id];
-  const key = [g.id, info ? 1 : 0, it.heroImg ? 1 : 0, it.coverImg ? 1 : 0, g.accent].join("|");
+  const key = [g.id, info ? 1 : 0, it.heroImg ? 1 : 0, it.coverImg ? 1 : 0, g.accent, fx.caseLogo ? 1 : 0].join("|");
   if (it.back && it.backFor === key) return;
   const c = document.createElement("canvas"); c.width = 600; c.height = 900;
   const x = c.getContext("2d"), shell = shellColor(g.accent, [0, 0, 0]);
@@ -1328,6 +1492,19 @@ function drawBack(it) {
     x.fillStyle = "#f4f1ea"; x.font = '500 28px "Bricolage Grotesque", "Segoe UI", sans-serif';
     x.fillText(v, cx, cy + 60);
   });
+  // who made it and who published it, in small print
+  const credit = [];
+  if (g.dev && g.dev.length && g.dev.join("|") === (g.pub || []).join("|")) credit.push(`${T.devPub} ${g.dev.join(", ")}`);
+  else {
+    if (g.dev && g.dev.length) credit.push(`${T.developedBy} ${g.dev.join(", ")}`);
+    if (g.pub && g.pub.length) credit.push(`${T.publishedBy} ${g.pub.join(", ")}`);
+  }
+  x.textAlign = "left"; x.fillStyle = "rgba(244,241,234,.62)"; x.font = '400 14px "Cascadia Mono", Consolas, monospace';
+  credit.slice(0, 2).forEach((line, k) => {
+    let t = line.toUpperCase();
+    while (t.length > 1 && x.measureText(t).width > 540) t = t.slice(0, -1);
+    x.fillText(t === line.toUpperCase() ? t : t.trimEnd() + "…", 30, 762 + k * 22);
+  });
   // barcode and app id, like a real case
   let seed = g.id;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -1337,12 +1514,21 @@ function drawBack(it) {
   x.font = '400 11px "Cascadia Mono", Consolas, monospace'; x.fillText(String(g.id).padStart(9, "0"), 40, 866);
   x.fillStyle = "rgba(244,241,234,.5)"; x.font = '400 14px "Cascadia Mono", Consolas, monospace';
   x.textAlign = "right"; x.fillText("APPID " + g.id, 570, 866);
+  if (fx.caseLogo) {
+    x.fillStyle = "rgba(244,241,234,.85)";
+    x.font = '500 17px "Cascadia Mono", Consolas, monospace';
+    const romW = x.measureText("R O M").width;
+    x.fillText("R O M", 570, 830);
+    x.font = '800 30px "Bricolage Grotesque", "Segoe UI", sans-serif';
+    x.fillText("PC", 570 - romW - 10, 832);
+  }
   if (it.back) gl.deleteTexture(it.back);
   it.back = makeTex(c); it.backFor = key;
   it.u.uBack.value = it.back; it.u.uBackOn.value = 1;
 }
 function flipCase(it) {
   it.flipTarget = Math.PI;
+  sfx.flip();
   ensureHero(it);
   if (!infoCache[it.g.id]) {
     if (host) send({ type: "info", id: it.g.id });
@@ -1401,7 +1587,8 @@ let items = [], list = [];
 let steamFound = true;
 let scroll = 0, target = 0, vel = 0, vSm = 0, mode = "list", activeIdx = -1;
 let sortKey = store.get("sort", "recent");
-if (!["recent", "hours", "az"].includes(sortKey)) sortKey = "recent";
+if (!["recent", "hours", "az", "studio"].includes(sortKey)) sortKey = "recent";
+let groupKey = store.get("group", "dev") === "pub" ? "pub" : "dev";
 let showKey = store.get("show", "installed");
 if (!["installed", "all", "missing"].includes(showKey)) showKey = "installed";
 let themePref = store.get("theme", "auto");
@@ -1428,7 +1615,7 @@ function ensureArt(it) {
       const a = accentFrom(img);
       if (a) { it.g.accent = a; if (list[activeIdx] === it) setAccent(a); }
     } else {
-      done(drawCover(it.g, it.art), 600, 900, true);
+      done(artFor(it), 600, 900, true);
     }
     makeSpine(it);
   });
@@ -1469,22 +1656,29 @@ function buildItems(games) {
     g.palette = g.palette || hashPalette(g.id);
     g.accent = g.palette[2];
     g.key = norm(g.name);
+    g.dev = Array.isArray(g.dev) ? g.dev.filter(x => typeof x === "string" && x) : [];
+    g.pub = Array.isArray(g.pub) ? g.pub.filter(x => typeof x === "string" && x) : [];
+    g.skey = norm(g.dev.concat(g.pub).join(" "));  // search also finds the studio
     g.installed = g.installed !== false;
+    return makeItem(g, i);
+  });
+  const inst = games.filter(g => g.installed !== false);
+  const hours = Math.round(inst.reduce((a, g) => a + (g.min || 0), 0) / 60);
+  $("totals").textContent = games.length ? T.summary(inst.length, games.length, hours.toLocaleString(LANG)) : "";
+  applyList(keepId, true);
+}
+function makeItem(g, i) {
     const u = {
       uTex: { value: blank }, uTex2: { value: blank }, uImg: { value: v2(600, 900) }, uImg2: { value: v2(600, 900) }, uMix: { value: 0 },
       uVel: { value: 0 }, uFlat: { value: 0 }, uIntro: { value: 1 }, uAlpha: { value: 1 },
       uActive: { value: 0 }, uHover: { value: 0 }, uLight: { value: LIGHT }, uGhost: { value: g.installed ? 0 : 1 }, uWave: { value: 0 }, uPlane: { value: v2(2, 3) },
       uDepth: { value: 0 }, uShell: [0.1, 0.1, 0.11], uSpine: { value: blank },
       uHolo: { value: 0 }, uBack: { value: blank }, uBackOn: { value: 0 }, uTilt: { value: 0 },
+      uVid: { value: blank }, uVidMix: { value: 0 }, uImgV: { value: v2(16, 9) }, uRom: { value: 0 },
     };
     return { g, u, pos: { x: 0, y: 0, z: 0 }, scl: { x: 1, y: 1 }, rot: { x: 0, y: 0 }, lean: { x: 0, y: 0 }, spine: null, sort: 0, visible: false,
              flip: 0, flipTarget: 0, back: null, backFor: "", discOut: { value: 0 }, spin: 0, coverImg: null, heroImg: null, logoImg: null,
              texA: null, texB: null, hasHero: false, heroLoading: false, state: "none", token: 0, placeholder: false, art: i, active: 0, hover: 0 };
-  });
-  const inst = games.filter(g => g.installed !== false);
-  const hours = Math.round(inst.reduce((a, g) => a + (g.min || 0), 0) / 60);
-  $("totals").textContent = games.length ? T.summary(inst.length, games.length, hours.toLocaleString(LANG)) : "";
-  applyList(keepId, true);
 }
 
 // The strip shows the games that match the filter and the search, in order.
@@ -1492,7 +1686,11 @@ function applyList(keepId, instant) {
   const q = words(query);
   const showOk = g => showKey === "all" || (showKey === "installed" ? g.installed : !g.installed);
   const prevIds = list.map(it => it.g.id).join(",");
-  list = items.filter(it => showOk(it.g) && q.every(w => it.g.key.includes(w))).sort(SORTS[sortKey]);
+  const inColl = collSet(), cmp = SORTS[sortKey];
+  list = items.filter(it => showOk(it.g) && (!inColl || inColl.has(it.g.id)) && q.every(w => it.g.key.includes(w) || it.g.skey.includes(w)));
+  if (sortKey === "studio") list = groupByStudio(list);
+  else list.sort((a, b) => (isFav(b.g) - isFav(a.g)) || cmp(a, b));
+  dividers.forEach((it, k) => { if (!list.includes(it)) { it.visible = false; releaseArt(it); if (it.stale) dividers.delete(k); } });
   items.forEach(it => { if (!list.includes(it)) { it.visible = false; releaseArt(it); } });
   if (keepId === undefined && list.map(it => it.g.id).join(",") === prevIds) return;
   const keep = keepId == null ? -1 : list.findIndex(it => it.g.id === keepId);
@@ -1508,6 +1706,7 @@ function applyList(keepId, instant) {
   if (empty) {
     if (query.trim()) { txt("empty-t", T.noMatchT(query.trim())); txt("empty-s", T.noMatchS); }
     else if (!steamFound) { txt("empty-t", T.noSteamT); txt("empty-s", T.noSteamS); }
+    else if (collSet()) { txt("empty-t", T.noCollT); txt("empty-s", T.noCollS); }
     else if (showKey === "missing") { txt("empty-t", T.emptyMissingT); txt("empty-s", T.emptyMissingS); }
     else { txt("empty-t", T.emptyT); txt("empty-s", T.emptyS); }
   }
@@ -1546,12 +1745,12 @@ let dragging = false, dragX = 0, dragStart = 0, moved = 0, lastWheel = 0;
 const wrap = (v, n) => ((v % n) + n) % n;
 const nearest = () => list.length ? wrap(Math.round(scroll / STEP), list.length) : -1;
 const ptr = v2(0, 0); let ptrIn = false;
-const isUi = t => t.closest && t.closest("button, input, label, .detail, .settings, .top");
+const isUi = t => t.closest && t.closest("button, input, label, .detail, .settings, .top, .year");
 
 addEventListener("pointerdown", e => {
   wake();
   if (!$("settings").hidden && !e.target.closest(".settings, #gear")) toggleSettings(false);
-  if (mode !== "list" || !list.length || e.button > 0 || isUi(e.target)) return;
+  if (mode !== "list" || !list.length || e.button > 0 || isUi(e.target) || yearOpen || spinning) return;
   dragging = true; moved = 0; dragX = e.clientX; dragStart = target;
   try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
   canvas.classList.add("dragging");
@@ -1578,7 +1777,7 @@ addEventListener("dragstart", e => e.preventDefault());
 canvas.addEventListener("pointerleave", () => { ptrIn = false; });
 addEventListener("wheel", e => {
   wake();
-  if (mode !== "list" || !list.length || (e.target.closest && e.target.closest(".settings"))) return;
+  if (mode !== "list" || !list.length || yearOpen || spinning || (e.target.closest && e.target.closest(".settings"))) return;
   target += (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) * 0.9;
   lastWheel = performance.now();
 }, { passive: true });
@@ -1600,6 +1799,8 @@ addEventListener("keydown", e => {
   wake();
   const inSearch = document.activeElement === qEl;
   if (hotkeyCapture) { captureHotkey(e); return; }
+  if (yearOpen) { if (e.key === "Escape") { e.preventDefault(); closeYear(); } return; }
+  if (spinning) { if (e.key === "Escape") cancelSpin(); e.preventDefault(); return; }
   // the launcher's own fields keep their keys
   if (e.target instanceof HTMLInputElement && e.target !== qEl) { if (e.key === "Escape") e.target.blur(); return; }
   if (!$("settings").hidden && e.key === "Escape") { toggleSettings(false); return; }
@@ -1682,6 +1883,7 @@ function pick() {
 function handleClick() {
   const it = pick(); if (!it) return;
   const i = list.indexOf(it), n = list.length;
+  if (i === nearest() && it.g.divider) { goTo(1); return; }
   if (i === nearest()) {
     // with "Back" on, the first click turns the case around, the second opens it
     if (isCases() && fx.back && it.flipTarget === 0) { flipCase(it); return; }
@@ -1816,6 +2018,12 @@ function setInfo(i, instant) {
   const apply = () => {
     $("idx").textContent = `${String(i + 1).padStart(2, "0")} / ${String(list.length).padStart(2, "0")}`;
     const it = list[i];
+    if (g.divider) {
+      setTitle(g.name);
+      $("meta").innerHTML = `<span><b>${T.gamesN(g.count)}</b></span><span><b>${g.hours.toLocaleString(LANG)} h</b></span>` +
+        `<span class="ghost">${g.other ? T.studio : groupKey === "pub" ? T.rolePub : T.roleDev}</span><span>${T.dividerHint}</span>`;
+      return;
+    }
     if (useLogoTitle(it)) {
       $("name").setAttribute("aria-label", g.name);
       $("name").innerHTML = `<img class="logo" alt="" src="${esc(g.logo)}">`;
@@ -1824,7 +2032,8 @@ function setInfo(i, instant) {
       `<span><b>${fmtPlay(g.min)}</b></span><span>${T.lastShort} <b>${fmtAgo(g.last * 1000)}</b></span>` +
       (g.installed ? `<span>${fmtSize(g.size)}</span>` : `<span class="ghost">${T.notInstalled}</span>`) +
       (g.update ? `<span class="pill">⟳ ${T.update}</span>` : "") +
-      (g.holo && fx.holo ? `<span class="holo-pill">✦ ${T.holo}</span>` : "");
+      (g.holo && fx.holo ? `<span class="holo-pill">✦ ${T.holo}</span>` : "") +
+      (isFav(g) ? `<span class="fav-mark">★ ${T.favMark}</span>` : "");
   };
   ensureLogo(list[i]);
   const token = ++infoToken;
@@ -1965,6 +2174,8 @@ function cleanNews(s) {
 const topBar = document.querySelector(".top");
 function openDetail() {
   if (mode !== "list" || !list.length) return;
+  // a studio's divider: step into its group instead
+  if (list[nearest()].g.divider) { target = scroll = Math.round(scroll / STEP) * STEP; goTo(1); return; }
   target = scroll = Math.round(scroll / STEP) * STEP;
   activeIdx = nearest();
   mode = "detail";
@@ -1975,8 +2186,14 @@ function openDetail() {
   detailDisc = isCases() && fx.disc;
   it.flipTarget = 0;
   showHeroLogo(it, detailDisc);
+  sfx.open();
+  if (detailDisc) setTimeout(() => { if (mode === "detail" && list[activeIdx] === it) sfx.disc(); }, reduced ? 0 : 800);
+  syncFavButton();
+  requestTrailer(g);
   $("d-title").textContent = g.name;
-  $("d-sub").textContent = `APPID ${g.id}`;
+  const credits = creditsHtml(g);
+  $("d-sub").innerHTML = (credits ? credits + "<br>" : "") + `APPID ${g.id}`;
+  $("d-sub").querySelectorAll("[data-studio]").forEach(b => b.addEventListener("click", () => showStudio(b.dataset.studio)));
   const stats = g.installed
     ? [[T.playtime, fmtPlay(g.min)], [T.lastSession, g.last ? fmtLong(g.last * 1000) : T.never],
        [T.installed, fmtLong(g.inst * 1000)], [T.disk, fmtSize(g.size) + (g.update ? " · ⟳" : "")]]
@@ -2022,6 +2239,8 @@ function closeDetail(instant) {
   }
   const o = { duration: instant ? 0 : 1, ease: "expo.inOut" };
   clearTimeout(heroLogoTimer); heroLogo.classList.remove("show");
+  stopTrailer(instant);
+  if (!instant) sfx.close();
   tween(it.discOut, "value", 0, { duration: instant ? 0 : .5, ease: "power2.inOut" });
   tween(backdrop.mix, "value", 0, { duration: instant ? 0 : .6 });
   tween(it.rot, "y", 0, o); tween(it.rot, "x", 0, o);
@@ -2037,7 +2256,13 @@ function closeDetail(instant) {
   } else tween(it.pos, "z", 0, o);
   const sc = isCases() ? CASE_SCALE : 1;
   tween(it.scl, "y", H * sc, o);
-  tween(it.scl, "x", W * sc, { ...o, onComplete: () => { if (mode === "closing") mode = "list"; } });
+  tween(it.scl, "x", W * sc, { ...o, onComplete: () => {
+    if (mode !== "closing") return;
+    mode = "list";
+    // a star changed while the game was open: the order changes now
+    if (resortAfterClose) { resortAfterClose = false; applyList(it.g.id, true); }
+    if (pendingStudio) goToPendingStudio(it.g.id);
+  } });
   if (!instant) tween(it.u.uWave, "value", 0, { from: .7, duration: 1.2, ease: "power2.out" });
   $("info").style.visibility = list.length ? "visible" : "hidden";
   topBar.style.visibility = "visible";
@@ -2065,6 +2290,7 @@ const SORTS = {
   recent: (a, b) => (b.g.last || 0) - (a.g.last || 0) || (b.g.installed - a.g.installed) || a.g.name.localeCompare(b.g.name, LANG),
   hours: (a, b) => b.g.min - a.g.min || a.g.name.localeCompare(b.g.name, LANG),
   az: (a, b) => a.g.name.localeCompare(b.g.name, LANG),
+  studio: (a, b) => a.g.name.localeCompare(b.g.name, LANG),
 };
 document.querySelectorAll("[data-sort]").forEach(b => b.addEventListener("click", () => {
   if (mode !== "list" || b.dataset.sort === sortKey) return;
@@ -2097,11 +2323,16 @@ if (host) {
     if (m.type === "library") {
       applyApp(m.app || null);
       steamFound = m.steam !== false;
+      collections = Array.isArray(m.collections) ? m.collections : [];
+      historyData = m.history && Array.isArray(m.history.rows) ? m.history : null;
+      renderCollections();
+      if (yearOpen) renderYear();
       setThemePref(m.theme, false);
       if (mode !== "list") closeDetail(true);
       buildItems(m.games || []);
     } else if (m.type === "show") {
       wake();
+      closeYear(); cancelSpin();
       if (mode === "detail") closeDetail(true);
       toggleSettings(false);
       if (query) setQuery("");
@@ -2114,6 +2345,8 @@ if (host) {
         url: /^https:\/\//.test(n.url || "") ? n.url : "",
       }));
       renderNews(m.id, out, false);
+    } else if (m.type === "trailer") {
+      if (m.webm || m.mp4) startTrailer(m);
     } else if (m.type === "info") {
       if (!m.disabled) {
         infoCache[m.id] = m;
@@ -2124,9 +2357,682 @@ if (host) {
   });
 }
 
+// ---------- features
+// Each one can be switched off in the settings (Features).
+
+// Sounds, made on the spot with WebAudio: a tick for each game that passes, a
+// rustle when a case opens, the click of the disc. Off until turned on.
+const sfx = (() => {
+  let ac = null, out = null, noiseBuf = null, lastTick = 0;
+  function ctx() {
+    if (!fx.sound) return null;
+    try {
+      if (!ac) {
+        ac = new (window.AudioContext || window.webkitAudioContext)();
+        out = ac.createGain(); out.gain.value = 0.6;
+        const comp = ac.createDynamicsCompressor();
+        out.connect(comp); comp.connect(ac.destination);
+        noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+        const d = noiseBuf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      }
+      if (ac.state === "suspended") ac.resume();
+      return ac;
+    } catch (e) { return null; }
+  }
+  function env(g, t, a, peak, dur) {
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  }
+  function tone(t, freq, dur, vol, type = "sine", to) {
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t);
+    if (to) o.frequency.exponentialRampToValueAtTime(to, t + dur);
+    env(g, t, Math.min(0.01, dur / 4), vol, dur);
+    o.connect(g); g.connect(out); o.start(t); o.stop(t + dur + 0.05);
+  }
+  function noise(t, dur, vol, f0, f1, q = 1) {
+    const n = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
+    n.buffer = noiseBuf; n.loop = true;
+    f.type = "bandpass"; f.Q.value = q;
+    f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    env(g, t, Math.min(0.03, dur / 3), vol, dur);
+    n.connect(f); f.connect(g); g.connect(out);
+    n.start(t, Math.random() * 0.5); n.stop(t + dur + 0.05);
+  }
+  const play = fn => { const a = ctx(); if (a) fn(a.currentTime); };
+  return {
+    unlock: () => { if (fx.sound) ctx(); },
+    tick: () => {
+      const now = performance.now();
+      if (now - lastTick < 38) return;
+      lastTick = now;
+      play(t => { tone(t, 2400, 0.028, 0.035, "triangle"); noise(t, 0.018, 0.05, 5200, 5200, 2); });
+    },
+    open: () => play(t => { noise(t, 0.42, 0.16, 500, 2800, 0.7); tone(t, 120, 0.22, 0.08, "sine", 62); }),
+    close: () => play(t => noise(t, 0.3, 0.1, 2600, 520, 0.7)),
+    flip: () => play(t => { noise(t, 0.26, 0.08, 900, 2000, 1.1); tone(t + 0.2, 180, 0.08, 0.05, "sine", 120); }),
+    disc: () => play(t => {
+      noise(t, 0.025, 0.22, 3200, 3200, 2); tone(t, 1500, 0.04, 0.06, "square", 900);
+      noise(t + 0.08, 0.02, 0.16, 2600, 2600, 2);
+      tone(t + 0.1, 196, 1.6, 0.03, "sine", 294);  // the drive spinning up
+    }),
+    chime: () => play(t => { tone(t, 784, 0.6, 0.07); tone(t + 0.09, 1175, 0.7, 0.06); tone(t + 0.18, 1568, 0.9, 0.045); }),
+  };
+})();
+addEventListener("pointerdown", sfx.unlock, true);
+addEventListener("keydown", sfx.unlock, true);
+
+// Favourites: a star in the detail view; they come first in the library.
+let favs = new Set();
+try { favs = new Set(JSON.parse(store.get("favs", "[]")).filter(n => Number.isFinite(n))); } catch (e) {}
+const isFav = g => fx.favs && favs.has(g.id);
+let resortAfterClose = false;
+function toggleFav(g) {
+  if (!fx.favs || !g || g.divider) return;
+  if (favs.has(g.id)) { favs.delete(g.id); toast(T.favRemoved(g.name)); }
+  else { favs.add(g.id); toast(T.favAdded(g.name)); sfx.chime(); }
+  store.set("favs", JSON.stringify([...favs]));
+  syncFavButton();
+  if (mode === "list") { applyList(g.id); if (list[activeIdx]) setInfo(activeIdx, true); }
+  else resortAfterClose = true;
+}
+function syncFavButton() {
+  const b = $("a-fav"), it = list[activeIdx];
+  b.hidden = !fx.favs || !it;
+  if (!it) return;
+  const on = favs.has(it.g.id);
+  b.setAttribute("aria-pressed", on);
+  b.textContent = on ? T.favOn : T.favAdd;
+}
+$("a-fav").addEventListener("click", () => { if (list[activeIdx]) toggleFav(list[activeIdx].g); });
+
+// Collections: Steam's own (from its local files) and the launcher's favourites.
+let collections = [], collKey = store.get("coll", "");
+function collSet() {
+  if (!collKey) return null;
+  if (collKey === "fav") return fx.favs ? favs : null;
+  const c = collections.find(c => c.id === collKey);
+  return c ? new Set(c.ids) : null;
+}
+const collName = c => c.id === "favorite" && !c.name ? T.collSteamFav : c.name;
+function renderCollections() {
+  const opts = [["", T.collAll]];
+  if (fx.favs) opts.push(["fav", T.collFav]);
+  collections.forEach(c => opts.push([c.id, collName(c)]));
+  if (!opts.some(o => o[0] === collKey)) collKey = "";
+  $("coll-sec").hidden = opts.length < 2;
+  const seg = $("coll-seg");
+  seg.innerHTML = opts.map(([id, name]) => `<button data-coll="${esc(id)}" aria-pressed="${id === collKey}">${esc(name)}</button>`).join("");
+  seg.querySelectorAll("[data-coll]").forEach(b => b.addEventListener("click", () => setColl(b.dataset.coll)));
+  const pill = $("coll-pill"), cur = opts.find(o => o[0] === collKey);
+  pill.hidden = !collKey || !cur;
+  if (cur) { pill.textContent = cur[1] + "  ×"; pill.title = T.oColl + ": " + cur[1]; }
+}
+function setColl(id) {
+  if (mode !== "list") return;
+  collKey = id; store.set("coll", id);
+  renderCollections();
+  applyList(list[activeIdx] ? list[activeIdx].g.id : null);
+}
+$("coll-pill").addEventListener("click", () => setColl(""));
+
+// "What should I play tonight?": the strip spins like a slot machine and lands
+// on a game, more often one that is installed and barely played.
+let spinning = null;
+const spinS = { v: 0 };
+function spinWeight(g) {
+  let w = g.installed ? 1 : 0.3;
+  w *= g.min <= 0 ? 1.6 : 1 / (1 + g.min / 900);
+  if (g.last && Date.now() / 1000 - g.last < 3 * 86400) w *= 0.35;
+  if (isFav(g)) w *= 1.3;
+  return w;
+}
+function spinTonight() {
+  if (!fx.spin || mode !== "list" || list.length < 2 || spinning || yearOpen) return;
+  wake(); toggleSettings(false);
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  const n = list.length, cur = nearest();
+  const pool = list.map((it, i) => [i, i === cur || it.g.divider ? 0 : spinWeight(it.g)]);
+  if (!pool.some(p => p[1] > 0)) return;
+  let r = Math.random() * pool.reduce((a, p) => a + p[1], 0), pickIdx = pool.find(p => p[1] > 0)[0];
+  for (const [i, w] of pool) { if ((r -= w) <= 0 && w > 0) { pickIdx = i; break; } }
+  let d = wrap(pickIdx - cur, n);
+  while (d < 14) d += n;  // a few turns around a small library
+  const from = scroll, to = Math.round(scroll / STEP) * STEP + d * STEP;
+  if (reduced) { target = scroll = to; return spinLanded(); }
+  spinning = { to };
+  spinS.v = from;
+  $("spin-btn").classList.add("busy");
+  tween(spinS, "v", to, { duration: 2.6 + Math.min(d, 80) / 80 * 1.6, ease: "spin", onComplete: spinLanded });
+}
+function spinLanded() {
+  if (!spinning && !reduced) return;
+  const to = spinning ? spinning.to : target;
+  spinning = null;
+  target = scroll = to;
+  $("spin-btn").classList.remove("busy");
+  const it = list[nearest()];
+  if (!it) return;
+  lensPulse.value = 0.7;
+  tween(lensPulse, "value", 0, { duration: 1.4, ease: "expo.out" });
+  spot.value = 1;
+  tween(spot, "value", 0, { duration: 2.4, ease: "power2.out", delay: .3 });
+  sfx.chime();
+  toast(T.tonight(it.g.name));
+}
+function cancelSpin() {
+  if (!spinning) return;
+  killTween(spinS, "v");
+  spinning = null;
+  $("spin-btn").classList.remove("busy");
+  target = Math.round(scroll / STEP) * STEP;
+}
+const spot = { value: 0 };  // the halo flares on the game the spin picked
+$("spin-btn").addEventListener("click", spinTonight);
+
+// Micro-trailers: after a moment on a game's page, its few silent seconds of
+// trailer fade in over the picture. The video streams from Steam's servers.
+const trailer = { el: null, tex: null, id: 0, timer: 0, mix: { value: 0 }, live: false, frameReady: false };
+function requestTrailer(g) {
+  clearTimeout(trailer.timer);
+  if (!fx.trailers || !host || reduced) return;
+  trailer.timer = setTimeout(() => { if (mode === "detail" && list[activeIdx] && list[activeIdx].g === g) send({ type: "trailer", id: g.id }); }, 2200);
+}
+function startTrailer(m) {
+  const it = list[activeIdx];
+  if (!fx.trailers || mode !== "detail" || !it || it.g.id !== m.id || document.hidden) return;
+  const v = document.createElement("video");
+  const url = m.webm && v.canPlayType('video/webm; codecs="vp9"') ? m.webm : m.mp4 || m.webm;
+  if (!url || !/^https:\/\/video\.[a-z.]*steamstatic\.com\//.test(url)) return;
+  stopTrailer(true);
+  v.muted = true; v.loop = true; v.playsInline = true; v.crossOrigin = "anonymous"; v.preload = "auto";
+  v.src = url;
+  trailer.el = v; trailer.id = m.id;
+  v.addEventListener("playing", () => {
+    if (trailer.el !== v) return;
+    trailer.live = true;
+    tween(trailer.mix, "value", 1, { duration: 1.4, ease: "power2.inOut" });
+  }, { once: true });
+  v.addEventListener("error", () => { if (trailer.el === v) stopTrailer(true); }, { once: true });
+  const p = v.play();
+  if (p && p.catch) p.catch(() => {});
+}
+function stopTrailer(instant) {
+  clearTimeout(trailer.timer);
+  const v = trailer.el;
+  if (!v) return;
+  const end = () => {
+    if (trailer.el !== v) return;
+    v.pause(); v.removeAttribute("src"); v.load();
+    trailer.el = null; trailer.live = false; trailer.frameReady = false; trailer.id = 0; trailer.mix.value = 0;
+    items.forEach(it => { it.u.uVidMix.value = 0; it.u.uVid.value = blank; });
+  };
+  if (instant || reduced) { killTween(trailer.mix, "value"); end(); }
+  else tween(trailer.mix, "value", 0, { duration: .35, onComplete: end });
+}
+// New video frames go into the texture only when there is one.
+function updateTrailer(act) {
+  const v = trailer.el;
+  if (!v || !trailer.live || !act || act.g.id !== trailer.id) return;
+  if (v.readyState >= 2 && v.videoWidth) {
+    if (!trailer.tex) trailer.tex = makeTex(v); else updateTex(trailer.tex, v);
+    trailer.frameReady = true;
+  }
+  if (!trailer.frameReady) return;
+  act.u.uVid.value = trailer.tex;
+  act.u.uImgV.value.set(v.videoWidth || 16, v.videoHeight || 9);
+  act.u.uVidMix.value = trailer.mix.value;
+}
+document.addEventListener("visibilitychange", () => { if (document.hidden) stopTrailer(true); });
+
+// Parallax: in the detail view the picture drifts against the pointer and the
+// logo with it, so they sit at different depths.
+const PAR = v2(0, 0), PARZ = { value: 0 };
+function updateParallax(L) {
+  const on = mode === "detail" && fx.parallax && !reduced;
+  const tx = on ? -ptrE.x * 0.022 : 0, ty = on ? -ptrE.y * 0.018 : 0;
+  PAR.x += (tx - PAR.x) * L(0.08); PAR.y += (ty - PAR.y) * L(0.08);
+  PARZ.value += ((on ? 0.06 : 0) - PARZ.value) * L(0.05);
+  heroLogo.style.transform = on || Math.abs(PAR.x) > 0.0005 ? `translate3d(${(-PAR.x * 900).toFixed(1)}px, ${(PAR.y * 700).toFixed(1)}px, 0)` : "";
+}
+
+// The "PC ROM" band printed on the cases (an invented mark, not a real brand).
+let romTex = blank, romMix = 0;
+function drawRomBand() {
+  const c = document.createElement("canvas"); c.width = 600; c.height = 68;
+  const x = c.getContext("2d");
+  const bg = x.createLinearGradient(0, 0, 0, 68);
+  bg.addColorStop(0, "#1d1e22"); bg.addColorStop(.5, "#0f1012"); bg.addColorStop(1, "#08080a");
+  x.fillStyle = bg; x.fillRect(0, 0, 600, 68);
+  x.globalAlpha = .05; x.fillStyle = x.createPattern(grain, "repeat"); x.fillRect(0, 0, 600, 68); x.globalAlpha = 1;
+  // a little disc
+  const cx = 44, cy = 34;
+  const disc = x.createRadialGradient(cx - 6, cy - 6, 2, cx, cy, 22);
+  disc.addColorStop(0, "#f4f5f8"); disc.addColorStop(.6, "#a9adb6"); disc.addColorStop(1, "#6e727b");
+  x.fillStyle = disc; x.beginPath(); x.arc(cx, cy, 21, 0, Math.PI * 2); x.fill();
+  x.globalCompositeOperation = "destination-out"; x.beginPath(); x.arc(cx, cy, 5, 0, Math.PI * 2); x.fill();
+  x.globalCompositeOperation = "source-over";
+  x.strokeStyle = "rgba(0,0,0,.35)"; x.lineWidth = 1.2; x.beginPath(); x.arc(cx, cy, 10, 0, Math.PI * 2); x.stroke();
+  // wordmark
+  const silver = x.createLinearGradient(0, 14, 0, 54);
+  silver.addColorStop(0, "#ffffff"); silver.addColorStop(.55, "#cfd2d8"); silver.addColorStop(1, "#8d9099");
+  x.fillStyle = silver; x.textBaseline = "middle";
+  x.font = '800 40px "Bricolage Grotesque", "Segoe UI", sans-serif';
+  x.fillText("PC", 82, 36);
+  const pcW = x.measureText("PC").width;
+  x.fillStyle = "rgba(255,255,255,.35)"; x.fillRect(82 + pcW + 12, 18, 2, 32);
+  x.fillStyle = silver;
+  x.font = '500 24px "Cascadia Mono", Consolas, monospace';
+  const rom = "ROM"; let rx = 82 + pcW + 28;
+  for (const ch of rom) { x.fillText(ch, rx, 37); rx += x.measureText(ch).width + 7; }
+  x.fillStyle = "rgba(220,222,228,.55)"; x.textAlign = "right";
+  x.font = '400 12px "Cascadia Mono", Consolas, monospace';
+  x.fillText("INTERACTIVE · ENTERTAINMENT", 578, 36);
+  if (romTex !== blank) gl.deleteTexture(romTex);
+  romTex = makeTex(c);
+}
+
+// Controller (any pad the browser maps as "standard": Xbox, PlayStation…).
+const pad = { prev: [], dir: 0, next: 0, seen: false, combo: false };
+function padHint(on) {
+  if (pad.seen === on) return;
+  pad.seen = on;
+  $("hint").innerHTML = on ? T.hintPad : host ? T.hintApp : T.hintWeb;
+}
+function pollPad(now) {
+  if (!fx.pad || !navigator.getGamepads) { padHint(false); return; }
+  let gp = null;
+  try { gp = [...navigator.getGamepads()].find(g => g && g.connected && g.buttons.length >= 16); } catch (e) {}
+  padHint(!!gp);
+  if (!gp) return;
+  const held = i => !!(gp.buttons[i] && gp.buttons[i].pressed);
+  const down = i => held(i) && !pad.prev[i];
+  const up = i => !held(i) && pad.prev[i];
+  const ax = gp.axes[0] || 0, ry = gp.axes[3] || 0, ly = gp.axes[1] || 0;
+  const any = gp.buttons.some(b => b.pressed) || Math.abs(ax) > 0.5 || Math.abs(ly) > 0.5 || Math.abs(ry) > 0.5;
+  if (any) wake();
+  // View + Menu together belong to the program (it opens and closes the launcher)
+  if (held(8) && held(9)) pad.combo = true;
+  const view = up(8) && !pad.combo, menu = up(9) && !pad.combo;
+  if (!held(8) && !held(9)) pad.combo = false;
+  const dir = held(15) || ax > 0.5 ? 1 : held(14) || ax < -0.5 ? -1 : 0;
+  const vert = (held(13) ? 1 : held(12) ? -1 : 0) || (Math.abs(ly) > 0.3 ? ly : 0) || (Math.abs(ry) > 0.2 ? ry : 0);
+  if (yearOpen) {
+    if (down(1) || view) closeYear();
+    if (vert) $("year").scrollBy(0, vert * 16);
+  } else if (!$("settings").hidden) {
+    if (down(1)) toggleSettings(false);
+  } else if (mode === "detail") {
+    if (down(1)) closeDetail();
+    else if (down(0)) $("play").click();
+    else if (menu) toggleFav(list[activeIdx] && list[activeIdx].g);
+    if (vert) $("detail").scrollBy(0, vert * 14);
+  } else if (mode === "list" && list.length && !spinning) {
+    if (dir) {
+      if (dir !== pad.dir) { goTo(dir); pad.next = now + 380; }
+      else if (now >= pad.next) { goTo(dir); pad.next = now + (Math.abs(ax) > 0.92 ? 70 : 130); }
+    }
+    if (down(4)) goTo(-5);
+    if (down(5)) goTo(5);
+    if (down(0)) { snap(); openDetail(); }
+    else if (down(1)) { if (query) setQuery(""); else send({ type: "close" }); }
+    else if (down(2)) { const it = list[nearest()]; if (it && !it.g.divider && isCases() && fx.back) { if (it.flipTarget === 0) flipCase(it); else it.flipTarget = 0; } }
+    else if (down(3)) spinTonight();
+    else if (menu) toggleFav(list[nearest()] && list[nearest()].g);
+    else if (view && fx.stats) openYear();
+  } else if (mode === "list" && spinning && down(1)) cancelSpin();
+  pad.dir = dir;
+  pad.prev = gp.buttons.map(b => b.pressed);
+}
+
+// "Your year": playtime per month, days played, streaks and games picked up
+// again. Steam keeps only totals; the program writes them down whenever they
+// grow (playtime.tsv), so the numbers start from the day it began counting.
+let historyData = null, yearOpen = false;
+const ymdDate = n => new Date(Math.floor(n / 10000), Math.floor(n / 100) % 100 - 1, n % 100);
+const dateYmd = d => d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+function playEvents() {
+  const h = historyData;
+  if (!h || !h.rows) return [];
+  const byGame = new Map();
+  h.rows.forEach(r => { if (!byGame.has(r[1])) byGame.set(r[1], []); byGame.get(r[1]).push(r); });
+  const ev = [];
+  byGame.forEach((rows, id) => {
+    rows.sort((a, b) => a[0] - b[0] || a[2] - b[2]);
+    let prev = null;
+    rows.forEach(r => {
+      const [day, , min, last] = r;
+      if (!prev) {
+        // first total: the starting point, unless the game was first played after counting began
+        if (day > h.since && min <= 16 * 60) ev.push({ day, id, min, gapFrom: 0 });
+      } else if (min > prev[2]) ev.push({ day, id, min: min - prev[2], gapFrom: prev[3] || 0 });
+      prev = r;
+    });
+  });
+  return ev;
+}
+function yearStats() {
+  const h = historyData;
+  const today = h && h.today ? ymdDate(h.today) : new Date();
+  const year = today.getFullYear(), y0 = year * 10000, todayN = dateYmd(today);
+  const ev = playEvents().filter(e => e.day > y0 && e.day < y0 + 10000);
+  const months = Array.from({ length: 12 }, () => 0);
+  const perGame = new Map(), days = new Set();
+  ev.forEach(e => {
+    months[Math.floor(e.day / 100) % 100 - 1] += e.min;
+    perGame.set(e.id, (perGame.get(e.id) || 0) + e.min);
+    days.add(e.day);
+  });
+  // streaks of consecutive days
+  const sorted = [...days].sort((a, b) => a - b);
+  let best = 0, run = 0, prevD = null;
+  sorted.forEach(dn => {
+    const d = ymdDate(dn);
+    run = prevD && Math.round((d - prevD) / DAY) === 1 ? run + 1 : 1;
+    best = Math.max(best, run); prevD = d;
+  });
+  let current = 0;
+  if (prevD && Math.round((today - prevD) / DAY) <= 1) current = run;
+  // picked up again: the longest pause before a session this year
+  let back = null;
+  ev.forEach(e => {
+    if (!e.gapFrom) return;
+    const gap = Math.round((ymdDate(e.day) - e.gapFrom * 1000) / DAY);
+    if (gap >= 120 && (!back || gap > back.gap)) back = { id: e.id, gap, day: e.day };
+  });
+  const since = h ? h.since : todayN;
+  const played = items.filter(it => it.g.last && new Date(it.g.last * 1000).getFullYear() === year).length;
+  return { year, months, perGame, days: days.size, best, current, back, since, todayN, played,
+           total: months.reduce((a, m) => a + m, 0) };
+}
+function renderYear() {
+  const s = yearStats(), box = $("year-in");
+  const byId = new Map(items.map(it => [it.g.id, it.g]));
+  const sinceD = ymdDate(s.since), sinceThisYear = sinceD.getFullYear() === s.year;
+  const fmtH = m => Math.round(m / 60).toLocaleString(LANG);
+  const monthFmt = new Intl.DateTimeFormat(LANG, { month: "short" });
+  const nowMonth = Math.floor(s.todayN / 100) % 100 - 1;
+  const maxM = Math.max(60, ...s.months);
+  const cols = s.months.map((m, i) => {
+    const off = sinceThisYear && i < sinceD.getMonth(), future = i > nowMonth;
+    const hgt = off ? 100 : future ? 2 : Math.max(1.5, m / maxM * 100);
+    return `<div class="y-month${i === nowMonth ? " now" : ""}${off ? " off" : ""}${future ? " future" : ""}">
+      <em>${off || future || !m ? "" : fmtH(m)}</em><div class="col"><i style="height:${hgt}%"></i></div>
+      <span>${esc(monthFmt.format(new Date(s.year, i, 1)).replace(".", ""))}</span></div>`;
+  }).join("");
+  let top = [...s.perGame.entries()].filter(([id]) => byId.has(id)).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  let topTitle = T.yTop;
+  if (!top.length) { top = items.filter(it => it.g.min > 0).sort((a, b) => b.g.min - a.g.min).slice(0, 6).map(it => [it.g.id, it.g.min]); topTitle = T.yTopAll; }
+  const topMax = top.length ? top[0][1] : 1;
+  const rows = top.map(([id, m], k) => `<button class="y-row" data-go="${id}"><span class="n">${String(k + 1).padStart(2, "0")}</span>
+      <span><strong>${esc(byId.get(id).name)}</strong><span class="bar"><i style="width:${m / topMax * 100}%"></i></span></span><b>${fmtPlay(m)}</b></button>`).join("");
+  const bestM = s.months.reduce((b, m, i) => m > s.months[b] ? i : b, 0);
+  const cards = [];
+  if (s.back && byId.has(s.back.id)) cards.push(`<div class="y-card"><span class="k">${T.yBack}</span><strong>${esc(byId.get(s.back.id).name)}</strong><p>${T.yBackT(T.yGap(s.back.gap))}</p></div>`);
+  else cards.push(`<div class="y-card"><span class="k">${T.yBack}</span><p>${T.yNoBack}</p></div>`);
+  if (s.total > 0) cards.push(`<div class="y-card"><span class="k">${T.yBest}</span><strong>${esc(new Intl.DateTimeFormat(LANG, { month: "long" }).format(new Date(s.year, bestM, 1)))}</strong><p>${fmtPlay(s.months[bestM])}</p></div>`);
+  cards.push(`<div class="y-card"><span class="k">${T.yNow}</span>${s.current ? `<strong>${T.daysN(s.current)}</strong>` : `<p>${T.yNowNone}</p>`}</div>`);
+  const sinceTxt = fmtLong(sinceD.getTime());
+  box.innerHTML = `
+    <button class="back" id="year-back">${T.yBackBtn}</button>
+    <div class="year-head"><div><h2>${T.yTitle(s.year)}</h2><div class="y-sub">${sinceThisYear ? T.ySince(sinceTxt) : T.yFull}</div></div></div>
+    <div class="y-nums">
+      <div><span>${T.yHours}</span><b>${fmtH(s.total)}</b></div>
+      <div><span>${T.yDays}</span><b>${s.days}</b></div>
+      <div><span>${T.yStreak}</span><b>${s.best}</b><small>${s.best ? T.daysN(s.best).replace(/^\d+\s*/, "") : ""}</small></div>
+      <div><span>${T.yGames}</span><b>${s.played}</b></div>
+    </div>
+    <div><h3>${T.yMonths}</h3><div class="y-months">${cols}</div>${s.total ? "" : `<p class="y-note" style="margin-top:14px">${T.yEmpty(sinceTxt)}</p>`}</div>
+    <div class="y-cols"><div><h3>${topTitle}</h3>${rows}</div><div class="y-cards">${cards.join("")}</div></div>`;
+  $("year-back").addEventListener("click", closeYear);
+  box.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => { closeYear(); jumpTo(+b.dataset.go); }));
+}
+function openYear() {
+  if (!fx.stats || yearOpen || mode !== "list") return;
+  cancelSpin(); toggleSettings(false); qEl.blur();
+  yearOpen = true;
+  renderYear();
+  const y = $("year"); y.hidden = false; y.scrollTop = 0;
+  if (!reduced) {
+    y.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, easing: "ease-out" });
+    [...$("year-in").children].forEach((el, k) => el.animate([{ opacity: 0, transform: "translateY(26px)" }, { opacity: 1, transform: "none" }],
+      { duration: 800, delay: 80 + k * 70, easing: EXPO_OUT, fill: "backwards" }));
+    y.querySelectorAll(".y-month i").forEach((el, k) => el.animate([{ transform: "scaleY(0)" }, { transform: "none" }],
+      { duration: 900, delay: 300 + k * 45, easing: EXPO_OUT, fill: "backwards" }));
+    y.querySelectorAll(".y-row .bar i").forEach((el, k) => el.animate([{ transform: "scaleX(0)" }, { transform: "none" }],
+      { duration: 900, delay: 450 + k * 60, easing: EXPO_OUT, fill: "backwards" }));
+  }
+  sfx.open();
+  setTimeout(() => { if (yearOpen) $("year-back").focus({ preventScroll: true }); }, 300);
+}
+function closeYear() {
+  if (!yearOpen) return;
+  yearOpen = false;
+  if (document.activeElement && document.activeElement.closest && document.activeElement.closest(".year")) document.activeElement.blur();
+  const y = $("year");
+  if (reduced) { y.hidden = true; return; }
+  const a = y.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" });
+  a.finished.then(() => { if (!yearOpen) y.hidden = true; a.cancel(); }).catch(() => {});
+  sfx.close();
+}
+$("year-btn").addEventListener("click", openYear);
+// From the year view straight to a game, even when a filter hides it.
+function jumpTo(id) {
+  let i = list.findIndex(it => it.g.id === id);
+  if (i < 0) {
+    showKey = "all"; store.set("show", showKey); markSeg("data-show", showKey);
+    collKey = ""; store.set("coll", ""); renderCollections();
+    if (query) setQuery("");
+    applyList(id);
+    i = list.findIndex(it => it.g.id === id);
+  }
+  if (i < 0) return;
+  const n = list.length;
+  let d = i - nearest();
+  if (d > n / 2) d -= n; if (d < -n / 2) d += n;
+  goTo(d);
+}
+
+// A sample year for the browser preview: made-up sessions over a few months.
+function sampleHistory(games) {
+  const today = new Date(), todayN = dateYmd(today);
+  const start = new Date(today.getFullYear(), Math.max(0, today.getMonth() - 7), 14);
+  const sinceN = dateYmd(start);
+  const rows = [], tot = new Map(), last = new Map();
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const played = games.filter(g => g.min > 0);
+  played.forEach(g => {
+    const m = Math.max(10, Math.round(g.min * 0.55));
+    tot.set(g.id, m);
+    // Hollow Knight sat untouched for over a year, to show "picked up again"
+    last.set(g.id, g.id === 367520 ? Math.round(start.getTime() / 1000) - 430 * 86400 : Math.round(start.getTime() / 1000) - Math.round(rnd() * 40) * 86400);
+    rows.push([sinceN, g.id, m, last.get(g.id)]);
+  });
+  for (let d = new Date(start.getTime() + DAY); dateYmd(d) <= todayN; d = new Date(d.getTime() + DAY)) {
+    if (rnd() > 0.58) continue;
+    const recent = (today - d) / DAY < 25;
+    const n = rnd() > 0.75 ? 2 : 1;
+    for (let k = 0; k < n; k++) {
+      let g = played[Math.floor(rnd() * Math.min(played.length, 6))];
+      if (recent && rnd() > 0.6) g = played.find(x => x.id === 367520) || g;
+      if (!recent && g.id === 367520) continue;
+      const add = 25 + Math.round(rnd() * 200);
+      const m = tot.get(g.id) + add;
+      rows.push([dateYmd(d), g.id, m, last.get(g.id)]);
+      tot.set(g.id, m); last.set(g.id, Math.round(d.getTime() / 1000) + 20 * 3600);
+    }
+  }
+  return { since: sinceN, today: todayN, rows };
+}
+
+// What each switch does when it changes.
+let romDrawn = false;
+function applyFeatures(changed) {
+  $("spin-btn").hidden = !fx.spin;
+  $("year-btn").hidden = !fx.stats;
+  if (!fx.spin) cancelSpin();
+  if (!fx.stats) closeYear();
+  if (!fx.trailers) stopTrailer(true);
+  if (!fx.pad) padHint(false);
+  if (fx.caseLogo && !romDrawn) { romDrawn = true; drawRomBand(); }
+  if (changed === "sound" && fx.sound) sfx.chime();
+  if (changed === "caseLogo") items.forEach(it => { if (it.state === "ready") makeSpine(it); it.backFor = ""; });
+  if (changed === "favs") { renderCollections(); if (mode === "list") applyList(list[activeIdx] ? list[activeIdx].g.id : null); if (list[activeIdx]) setInfo(activeIdx, true); }
+  syncFavButton();
+}
+
+// ---------- studios
+// "Studios" groups the library by developer (or publisher), from Steam's own
+// files. Each group starts with a divider card, like the ones between the
+// sections of a record shop; studios with one game share "Other studios".
+const dividers = new Map();  // key -> item
+const studiosOf = g => (groupKey === "pub" ? (g.pub.length ? g.pub : g.dev) : (g.dev.length ? g.dev : g.pub));
+function dividerItem(key, name, games, other) {
+  const hours = Math.round(games.reduce((a, it) => a + (it.g.min || 0), 0) / 60);
+  const sig = [groupKey, games.length, hours, games.slice(0, 7).map(it => it.g.id).join(".")].join("|");
+  let it = dividers.get(key);
+  if (it && it.sig !== sig) { releaseArt(it); it.stale = true; dividers.delete(key); it = null; }
+  if (!it) {
+    let h = 0;
+    for (const ch of name) h = (h * 31 + ch.codePointAt(0)) % 1000003;
+    const g = { id: -1 - h, name, divider: true, other, key: norm(name), skey: "", dev: [], pub: [], installed: true, min: hours * 60, last: 0,
+                count: games.length, hours, titles: games.slice(0, 7).map(x => x.g.name), palette: hashPalette(h + 7) };
+    g.accent = g.palette[2];
+    it = makeItem(g, h);
+    it.sig = sig;
+    dividers.set(key, it);
+  }
+  return it;
+}
+function groupByStudio(games) {
+  const groups = new Map();
+  games.forEach(it => {
+    const name = studiosOf(it.g)[0] || "";
+    const k = norm(name);
+    if (!groups.has(k)) groups.set(k, { name, games: [] });
+    groups.get(k).games.push(it);
+  });
+  const byName = (a, b) => a.g.name.localeCompare(b.g.name, LANG);
+  const big = [...groups.entries()].filter(([k, gr]) => k && gr.games.length >= 2).sort((a, b) => a[1].name.localeCompare(b[1].name, LANG));
+  const rest = [...groups.entries()].filter(([k, gr]) => !k || gr.games.length < 2).flatMap(([, gr]) => gr.games)
+    .sort((a, b) => (studiosOf(a.g)[0] || "￿").localeCompare(studiosOf(b.g)[0] || "￿", LANG) || byName(a, b));
+  const out = [];
+  big.forEach(([k, gr], n) => { const d = dividerItem(groupKey + ":" + k, gr.name, gr.games, false); d.g.index = n + 1; out.push(d, ...gr.games.sort(byName)); });
+  if (rest.length) {
+    const label = big.length ? T.otherStudios : groups.size === 1 && groups.has("") ? T.unknownStudio : T.otherStudios;
+    const d = dividerItem(groupKey + ":*", label, rest, true);
+    d.g.index = big.length + 1;
+    out.push(d, ...rest);
+  }
+  return out;
+}
+const artFor = it => it.g.divider ? drawDivider(it.g) : drawCover(it.g, it.art);
+
+// The divider card: the studio's name set large, its numbers and its games.
+function drawDivider(g) {
+  const c = document.createElement("canvas"); c.width = 600; c.height = 900;
+  const x = c.getContext("2d"), p = g.palette;
+  const bg = x.createLinearGradient(0, 0, 0, 900);
+  bg.addColorStop(0, p[1]); bg.addColorStop(.55, p[0]); bg.addColorStop(1, "#060607");
+  x.fillStyle = bg; x.fillRect(0, 0, 600, 900);
+  // the studio's initial, huge and faint, behind everything
+  x.save();
+  x.font = '800 760px "Bricolage Grotesque", "Segoe UI", sans-serif';
+  x.textBaseline = "alphabetic";
+  x.globalAlpha = .16; x.strokeStyle = p[2]; x.lineWidth = 3;
+  const initial = [...(g.other ? "+" : g.name.trim())][0] || "?";
+  x.strokeText(initial.toUpperCase(), 210, 860);
+  x.restore();
+  x.globalAlpha = .06; x.fillStyle = x.createPattern(grain, "repeat"); x.fillRect(0, 0, 600, 900); x.globalAlpha = 1;
+  // the tab
+  x.fillStyle = p[2];
+  x.beginPath(); x.roundRect(352, 34, 214, 74, 14); x.fill();
+  x.fillStyle = "#0c0d0f"; x.textAlign = "center"; x.textBaseline = "middle";
+  x.font = '600 24px "Cascadia Mono", Consolas, monospace';
+  x.fillText("№ " + String(g.index || 1).padStart(2, "0"), 459, 72);
+  x.textAlign = "left"; x.textBaseline = "alphabetic";
+  x.fillStyle = "rgba(244,241,234,.6)";
+  x.font = '500 18px "Cascadia Mono", Consolas, monospace';
+  x.fillText((g.other ? T.studio : groupKey === "pub" ? T.rolePub : T.roleDev).toUpperCase(), 40, 80);
+  // the name, as large as it fits in three lines
+  let size = 112, lines = [];
+  const wrapLines = () => {
+    x.font = `800 ${size}px "Bricolage Grotesque", "Segoe UI", sans-serif`;
+    lines = []; let cur = "";
+    g.name.split(/\s+/).forEach(w => { const t = cur ? cur + " " + w : w; if (x.measureText(t).width > 520 && cur) { lines.push(cur); cur = w; } else cur = t; });
+    lines.push(cur);
+  };
+  for (wrapLines(); size > 40 && (lines.length > 3 || lines.some(l => x.measureText(l).width > 520)); wrapLines()) size -= 6;
+  x.fillStyle = "#f4f1ea";
+  const lh = size * 0.95, top = 200 + size * 0.8;
+  lines.forEach((l, k) => x.fillText(l, 38, top + k * lh));
+  const after = top + (lines.length - 1) * lh + 46;
+  x.fillStyle = p[2]; x.fillRect(40, after, 120, 4);
+  x.fillStyle = "#f4f1ea"; x.font = '500 26px "Bricolage Grotesque", "Segoe UI", sans-serif';
+  x.fillText(`${T.gamesN(g.count)}  ·  ${g.hours.toLocaleString(LANG)} h`, 40, after + 52);
+  // the games inside, like an index
+  x.font = '400 19px "Cascadia Mono", Consolas, monospace';
+  x.fillStyle = "rgba(244,241,234,.62)";
+  let y = Math.max(after + 110, 560);
+  for (const t of g.titles) {
+    if (y > 850) break;
+    let s = t;
+    while (s.length > 1 && x.measureText(s).width > 500) s = s.slice(0, -1);
+    x.fillText(s === t ? t : s.trimEnd() + "…", 40, y);
+    y += 36;
+  }
+  return c;
+}
+
+// Credits in the detail view: the studio names jump to their group.
+function creditsHtml(g) {
+  if (!g.dev.length && !g.pub.length) return "";
+  const link = n => `<button class="studio-link" data-studio="${esc(n)}">${esc(n)}</button>`;
+  const same = g.dev.length && g.dev.join("|") === g.pub.join("|");
+  const parts = [];
+  if (same) parts.push(`${T.devPub} ${g.dev.map(link).join(", ")}`);
+  else {
+    if (g.dev.length) parts.push(`${T.developedBy} ${g.dev.map(link).join(", ")}`);
+    if (g.pub.length) parts.push(`${T.publishedBy} ${g.pub.map(link).join(", ")}`);
+  }
+  return parts.join(" · ");
+}
+let pendingStudio = null;
+function showStudio(name) {
+  const it = list[activeIdx];
+  pendingStudio = { name, role: it && it.g.pub.includes(name) && !it.g.dev.includes(name) ? "pub" : "dev" };
+  closeDetail();
+}
+// After the detail view closes: switch to Studios and glide to the studio's divider.
+function goToPendingStudio(fromId) {
+  const ps = pendingStudio; pendingStudio = null;
+  if (!ps) return;
+  if (groupKey !== ps.role) { groupKey = ps.role; store.set("group", groupKey); markSeg("data-group", groupKey); }
+  if (sortKey !== "studio") { sortKey = "studio"; store.set("sort", sortKey); markSeg("data-sort", sortKey); }
+  applyList(fromId, true);
+  const k = norm(ps.name);
+  let i = list.findIndex(it => it.g.divider && !it.g.other && it.g.key === k);
+  if (i < 0) i = list.findIndex(it => it.g.id === fromId);
+  if (i < 0) return;
+  const n = list.length;
+  let d = i - nearest();
+  if (d > n / 2) d -= n; if (d < -n / 2) d += n;
+  goTo(d);
+}
+document.querySelectorAll("[data-group]").forEach(b => b.addEventListener("click", () => {
+  if (mode !== "list" || b.dataset.group === groupKey) return;
+  groupKey = b.dataset.group; store.set("group", groupKey);
+  markSeg("data-group", groupKey);
+  if (sortKey === "studio") applyList(null);
+}));
+markSeg("data-group", groupKey);
+
 // ---------- loop
 const MODEL = new Float32Array(16);
-let caseReflect = 0;
+let caseReflect = 0, infoPending = false, infoFirst = false;
 const t0 = performance.now();
 let lastNow = t0;
 function frame(now) {
@@ -2136,6 +3042,7 @@ function frame(now) {
   lastNow = now;
   const L = k => 1 - Math.pow(1 - k, dt * 60);
   stepTweens(now);
+  pollPad(now);
   TIME.value = reduced ? 0 : (now - t0) / 1000;
   updateDaylight(now);
   for (let k = 0; k < 3; k++) {
@@ -2150,20 +3057,21 @@ function frame(now) {
     const gc = glowU.uCenter.value, r = mode === "list" ? null : heroRect();
     const tx = r ? (r.x + VW / 2) / VW : 0.5, ty = r ? (r.y + VH / 2) / VH : (STRIP_Y + VH / 2) / VH;
     gc.x += (tx - gc.x) * L(0.06); gc.y += (ty - gc.y) * L(0.06);
-    glowU.uPower.value += ((list.length ? 1 : 0) - glowU.uPower.value) * L(0.05);
+    glowU.uPower.value += ((list.length ? 1 : 0) + spot.value * 0.9 - glowU.uPower.value) * L(0.08);
   }
   const n = list.length;
   if (mode === "list") {
     if (!dragging && lastWheel && now - lastWheel > 140) { snap(); lastWheel = 0; }
     const prev = scroll;
-    scroll += (target - scroll) * (reduced ? 1 : L(showroomOn ? 0.035 : 0.085));
+    if (spinning) scroll = target = spinS.v;
+    else scroll += (target - scroll) * (reduced ? 1 : L(showroomOn ? 0.035 : 0.085));
     vel = dt > 0 ? (scroll - prev) / (dt * 60) : 0;
   } else vel = 0;
   vSm += ((reduced ? 0 : vel) - vSm) * L(0.18);
 
   const total = list.length * STEP, cur = nearest();
   // showroom: starts after the chosen idle time, only on the library itself
-  const srAllowed = fx.showroom > 0 && mode === "list" && n > 1 && $("settings").hidden && !dragging && !query;
+  const srAllowed = fx.showroom > 0 && mode === "list" && n > 1 && $("settings").hidden && !dragging && !query && !spinning && !yearOpen;
   if (srAllowed && !showroomOn && now - idleSince > fx.showroom * 1000) startShowroom(now);
   if (showroomOn && !srAllowed) wake();
   // next game only once the previous glide has landed, so a slow PC never falls behind
@@ -2198,7 +3106,9 @@ function frame(now) {
       }
       const ax = Math.abs(x);
       it.visible = ax < near && (mode === "list" || u.uAlpha.value > 0.01);
-      if (ax < near) ensureArt(it); else if (ax > far) releaseArt(it);
+      // a fast spin doesn't load every cover it flies past
+      if (ax < near) { if (!spinning || Math.abs(vel) < STEP * 0.12) ensureArt(it); }
+      else if (ax > far) releaseArt(it);
     } else {
       it.visible = true;
     }
@@ -2225,9 +3135,20 @@ function frame(now) {
     if (!it.flipTarget && Math.abs(it.flip) < 0.002) it.flip = 0;
     u.uHolo.value += ((fx.holo && it.g.holo && mode === "list" ? 1 : 0) - u.uHolo.value) * L(0.08);
     u.uTilt.value = it.rot.y;
+    u.uRom.value = it.g.divider ? 0 : romMix;  // dividers aren't game cases
     if (it.discOut.value > 0.001) it.spin += dt * (0.35 + 2.4 * it.discOut.value);
   });
-  if (mode === "list" && n && cur !== activeIdx) { const first = activeIdx < 0; activeIdx = cur; setInfo(cur, first); }
+  if (mode === "list" && n && cur !== activeIdx) {
+    infoFirst = infoFirst || activeIdx < 0;
+    if (activeIdx >= 0) sfx.tick();
+    activeIdx = cur;
+    infoPending = true;
+  }
+  // while spinning, the title changes only once the strip slows down
+  if (infoPending && mode === "list" && n && (!spinning || Math.abs(vel) < STEP * 0.05)) {
+    setInfo(activeIdx, infoFirst);
+    infoPending = infoFirst = false;
+  }
 
   // effects
   CURVE.value += (fx.curve / 100 - CURVE.value) * L(0.1);
@@ -2240,6 +3161,8 @@ function frame(now) {
   postU.uReflect.value += ((fx.reflect && mode === "list" && n && !cases ? 1 : 0) - postU.uReflect.value) * L(0.08);
   caseReflect += ((fx.reflect && mode === "list" && n ? 1 : 0) - caseReflect) * L(0.08);
   dustU.uScroll.value = scroll;
+  updateParallax(L);
+  romMix += ((fx.caseLogo ? 1 : 0) - romMix) * L(0.08);
   dustU.uAlpha.value += ((mode === "list" ? 1 : 0.35) - dustU.uAlpha.value) * L(0.05);
 
   // pass 1: the scene, into the off-screen target
@@ -2266,17 +3189,21 @@ function frame(now) {
   if (cases) order.sort((a, b) => b.sort - a.sort);
   if (mode !== "list" && list[activeIdx] && order.includes(list[activeIdx])) { order.splice(order.indexOf(list[activeIdx]), 1); order.push(list[activeIdx]); }
   const act = mode !== "list" ? list[activeIdx] : null;
+  updateTrailer(act);
   if (cases && act && backdrop.mix.value > 0.01) {
     // behind an opened case: its big picture, dimmed
     use(coverProg, [["position", GRID.pos, 3], ["uv", GRID.uv, 2]]);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GRID.idx);
-    setUniforms(coverProg, { viewMatrix: VIEW, projectionMatrix: PROJ, uViewW: VW, uBg: BG, uTime: TIME, uCurve: CURVE, uPx: DPR, uPointer: ptrE });
+    setUniforms(coverProg, { viewMatrix: VIEW, projectionMatrix: PROJ, uViewW: VW, uBg: BG, uTime: TIME, uCurve: CURVE, uPx: DPR, uPointer: ptrE, uPar: PAR, uParZ: PARZ });
     gl.uniformMatrix4fv(coverProg.u("modelMatrix"), false, modelMatrix(backdrop, MODEL));
     setUniforms(coverProg, {
       uTex: act.u.uTex2.value, uTex2: act.u.uTex2.value, uImg: act.u.uImg2.value, uImg2: act.u.uImg2.value, uMix: 0,
       uVel: 0, uFlat: 1, uIntro: 1, uAlpha: backdrop.mix.value, uActive: 1, uHover: 0, uLight: LIGHT, uGhost: 1.2,
       uWave: 0, uPlane: { value: v2(backdrop.scl.x, backdrop.scl.y) }, uHolo: 0, uTilt: 0,
+      uVid: act.u.uVid.value, uVidMix: act.u.uVidMix.value, uImgV: act.u.uImgV.value,
     });
+    // the trailer plays in the backdrop, brighter than the still picture
+    gl.uniform1f(coverProg.u("uGhost"), 1.2 - 0.75 * act.u.uVidMix.value);
     gl.drawElements(gl.TRIANGLES, GRID.count, gl.UNSIGNED_SHORT, 0);
   }
   if (cases) {
@@ -2285,7 +3212,8 @@ function frame(now) {
     gl.depthFunc(gl.LEQUAL);
     use(caseProg, [["position", BOX.pos, 3], ["uv", BOX.uv, 2], ["normal", BOX.nrm, 3], ["face", BOX.face, 1]]);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, BOX.idx);
-    setUniforms(caseProg, { viewMatrix: VIEW, projectionMatrix: PROJ, uBg: BG, uPx: DPR, uFloor: STRIP_Y - H * CASE_SCALE / 2, uH: H * CASE_SCALE, uReflect: caseReflect, uPointer: ptrE, uTime: TIME });
+    const caseUnit = setUniforms(caseProg, { viewMatrix: VIEW, projectionMatrix: PROJ, uBg: BG, uPx: DPR, uFloor: STRIP_Y - H * CASE_SCALE / 2, uH: H * CASE_SCALE, uReflect: caseReflect, uPointer: ptrE, uTime: TIME,
+                                              uPar: PAR, uParZ: PARZ, uRomTex: romTex });
     // reflections first, mirrored under the floor
     for (const mirror of caseReflect > 0.01 ? [1, 0] : [0]) {
       gl.uniform1f(caseProg.u("uMirror"), mirror);
@@ -2294,7 +3222,7 @@ function frame(now) {
         // cases fading out don't hide the ones behind them
         gl.depthMask(it.u.uAlpha.value > 0.98);
         gl.uniformMatrix4fv(caseProg.u("modelMatrix"), false, modelMatrix(it, MODEL));
-        setUniforms(caseProg, it.u);
+        setUniforms(caseProg, it.u, caseUnit);
         gl.drawElements(gl.TRIANGLES, BOX.count, gl.UNSIGNED_SHORT, 0);
       }
     }
@@ -2314,7 +3242,7 @@ function frame(now) {
   } else {
     use(coverProg, [["position", GRID.pos, 3], ["uv", GRID.uv, 2]]);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GRID.idx);
-    setUniforms(coverProg, { viewMatrix: VIEW, projectionMatrix: PROJ, uViewW: VW, uBg: BG, uTime: TIME, uCurve: CURVE, uPx: DPR, uPointer: ptrE });
+    setUniforms(coverProg, { viewMatrix: VIEW, projectionMatrix: PROJ, uViewW: VW, uBg: BG, uTime: TIME, uCurve: CURVE, uPx: DPR, uPointer: ptrE, uPar: PAR, uParZ: PARZ });
     for (const it of order) {
       gl.uniformMatrix4fv(coverProg.u("modelMatrix"), false, modelMatrix(it, MODEL));
       setUniforms(coverProg, it.u);
@@ -2337,9 +3265,10 @@ function frame(now) {
 // Placeholders are drawn before the fonts are ready: redraw them once they are.
 function redrawPlaceholders() {
   items.forEach(it => {
-    if (it.state === "ready" && it.placeholder) updateTex(it.texA, drawCover(it.g, it.art));
+    if (it.state === "ready" && it.placeholder) updateTex(it.texA, artFor(it));
     if (it.state === "ready") makeSpine(it);
   });
+  dividers.forEach(it => { if (it.state === "ready") { updateTex(it.texA, artFor(it)); makeSpine(it); } });
 }
 
 addEventListener("resize", resize);
@@ -2349,12 +3278,18 @@ markSeg("data-theme-pref", themePref);
 if (!host && themePref !== "auto") setThemePref(themePref, false);
 applyTheme();
 resize();
-document.fonts.ready.then(redrawPlaceholders);
+document.fonts.ready.then(() => { redrawPlaceholders(); if (romDrawn) drawRomBand(); });
+renderCollections();
+applyFeatures();
 if (host) {
   send({ type: "ready" });
 } else {
   $("sample").hidden = false;
-  buildItems(sampleLibrary());
+  const sample = sampleLibrary();
+  historyData = sampleHistory(sample);
+  collections = [{ id: "uc-rogue", name: "Roguelike", ids: [1145350, 367520, 504230, 105600] }, { id: "favorite", name: "", ids: [620, 753640, 632470] }];
+  renderCollections();
+  buildItems(sample);
   intro();
   // sample logos, drawn once the title font is ready (the real ones come from Steam)
   document.fonts.ready.then(() => {
