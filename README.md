@@ -1,13 +1,10 @@
 # Steam Launcher
-![PREVIEW](https://i.imgur.com/f07Sf7h.jpeg)
 
 A minimal, animated launcher for your Steam library: covers on a WebGL strip
 or as 3D game cases, search as you type, playtime, Steam reviews, Metacritic,
 time to beat and news, studios, your year in games, and a showroom mode that
 presents your games on its own.
 Not affiliated with Valve.
-
-![PREVIEW2](https://i.imgur.com/xwR6r2W.png)
 
 The same launcher ships two ways, built from one set of sources:
 
@@ -23,8 +20,6 @@ Download both from the [Releases](../../releases) page. Run only one of the
 two: both use **Ctrl+Alt+G** by default, and the second one can't register it.
 
 ## Features
-
-![PREVIEW3](https://i.imgur.com/hyMRPCs.jpeg)
 
 - Installed and not installed games, from Steam's own files: no account or API
   key needed.
@@ -51,8 +46,6 @@ two: both use **Ctrl+Alt+G** by default, and the second one can't register it.
   **sounds** (off by default), a **PC ROM** band on the cases.
 - **Controller** support; hold View + Menu to open the launcher from anywhere.
 - Light and dark theme, Italian and English.
-
-![PREVIEW4SETTINGS](https://i.imgur.com/LgShByn.png)
 
 ## Using the program
 
@@ -87,8 +80,6 @@ If something goes wrong the program shows a message instead of closing, and
 `launcher.log` records every step of the start-up.
 
 ### Time to beat
-
-![TIMETOBEAT](https://i.imgur.com/dzu2QkU.png)
 
 HowLongToBeat has no public API, so the launcher uses IGDB's data. To turn it
 on, sign in at [dev.twitch.tv/console](https://dev.twitch.tv/console) (two-factor
