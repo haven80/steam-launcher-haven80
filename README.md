@@ -1,5 +1,5 @@
 # Steam Launcher
-[PREVIEW](https://i.imgur.com/f07Sf7h.jpeg)
+![PREVIEW](https://i.imgur.com/f07Sf7h.jpeg)
 
 A minimal, animated launcher for your Steam library: covers on a WebGL strip
 or as 3D game cases, search as you type, playtime, Steam reviews, Metacritic,
