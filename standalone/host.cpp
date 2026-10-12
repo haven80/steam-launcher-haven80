@@ -18,7 +18,7 @@ SRWLOCK g_logLock = SRWLOCK_INIT;
 
 const wchar_t kRunKey[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 const wchar_t kRunValue[] = L"Steam Launcher";
-const wchar_t kVersion[] = L"1.0.3";
+const wchar_t kVersion[] = L"1.0.4";
 
 struct Setting {
     const wchar_t* key;
