@@ -37,6 +37,8 @@ two: both use **Ctrl+Alt+G** by default, and the second one can't register it.
 - Showroom: after a while without input the library scrolls by itself.
 - Light and dark theme, Italian and English.
 
+![PREVIEW4SETTINGS](https://i.imgur.com/LgShByn.png)
+
 ## Using the program
 
 Put `SteamLauncher.exe` in a folder of its own (for example
